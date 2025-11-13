@@ -1,0 +1,47 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Server (Blazor)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "⚙️ Build Web",
+            "program": "${workspaceFolder}/webapp/bin/Debug/net9.0/webapp.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/webapp",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "debugWithEdge",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
+            "name": "Client (WebAssembly)",
+            "type": "blazorwasm",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/webapp.Client",
+            "browser": "edge",
+            "url": "https://localhost:7106",
+            "timeout": 120000,
+            "webRoot": "${workspaceFolder}/webapp.Client",
+            "trace": true
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Full Stack Debug",
+            "configurations": ["Server (Blazor)", "Client (WebAssembly)"],
+            "stopAll": true,
+            "preLaunchTask": "⚙️ Build Web"
+        }
+    ]
+}

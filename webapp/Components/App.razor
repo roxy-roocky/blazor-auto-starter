@@ -1,0 +1,32 @@
+﻿@inject webapp.Managers.ThemeManager ThemeManager
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme=@(ThemeManager.GetCurrentTheme().ToString()!.ToLowerInvariant())>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="@Assets["/bootstrap/bootstrap.css"]" />
+    <link rel="stylesheet" href="@Assets["/custom/app.css"]" />
+    <link rel="stylesheet" href="@Assets["webapp.styles.css"]" />
+
+    <link href="fontawesome/css/fontawesome.css" rel="stylesheet" />
+    <link href="fontawesome/css/brands.css" rel="stylesheet" />
+    <link href="fontawesome/css/solid.css" rel="stylesheet" />
+    <link href="fontawesome/css/regular.css" rel="stylesheet" />
+
+    <ImportMap />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <HeadOutlet />
+</head>
+
+<body>
+    <Routes />
+    <script src="_framework/blazor.web.js"></script>
+    <script src="bootstrap/bootstrap.bundle.min.js"></script>
+    
+    <script src="js/ThemeSwitcher.js"></script>
+</body>
+
+</html>

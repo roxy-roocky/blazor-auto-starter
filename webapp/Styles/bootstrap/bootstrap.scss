@@ -1,0 +1,21 @@
+@import "../../node_modules/bootstrap/scss/functions";
+
+$white: #ffffff;
+
+// Il faut déclarer la couleur primaire à part car sinon elle n'est
+// pas prise en compte par certains composants (notamment les form check switch)
+$primary: #5f2f21;
+$theme-colors: (
+    "light":      #e6cfbc,
+    "dark":       #1e151e,
+    "primary":    $primary,
+    "secondary":  #975b45,
+    "info":       #ae8566,
+    "accent1":    #a29891,
+    "success":    #5a9a2a,
+    "warning":    #fdbd5e,
+    "danger":     #ea1a63,
+);
+
+
+@import "../../node_modules/bootstrap/scss/bootstrap";

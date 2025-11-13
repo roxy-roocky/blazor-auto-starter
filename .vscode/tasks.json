@@ -1,0 +1,145 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "💄 Watch SASS",
+            "command": "npx",
+            "type": "shell",
+            "args": [
+                "sass",
+                "-q",
+                "Styles/:wwwroot/",
+                "--watch"
+            ],
+            "options": {
+                "cwd": "webapp"
+            },
+        },
+        {
+            "label": "⌚ Watch Web",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "watch",
+            ],
+            "options": {
+                "cwd": "webapp"
+            },
+        },
+        {
+            "label": "⚙️ Build Web",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "build",
+            ],
+            "options": {
+                "cwd": "webapp"
+            },
+        },
+        {
+            "label": "🗃️ EF - ➕ Ajouter une migration",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "ef",
+                "migrations",
+                "add",
+                "${input:migrationName}",
+                "--project",
+                "${workspaceFolder}/webapp"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                
+            },
+            "group": "none"
+        },
+        {
+            "label": "🗃️ EF - 🚫 Supprimer la dernière migration",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "ef",
+                "migrations",
+                "remove",
+                "--project",
+                "${workspaceFolder}/webapp"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                
+            },
+            "group": "none"
+        },
+        {
+            "label": "🗃️ EF - ⬆️ Mettre à jour la base de données",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "ef",
+                "database",
+                "update",
+                "--project",
+                "${workspaceFolder}/webapp"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                
+            },
+            "group": "none"
+        },
+        {
+            "label": "🗃️ EF - ↩️ Annuler la dernière mise à jour de la base de données",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "ef",
+                "database",
+                "update",
+                "${input:previousMigration}",
+                "--project",
+                "${workspaceFolder}/webapp"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                
+            },
+            "group": "none"
+        },
+        {
+            "label": "🗃️ EF - 📑 Lister les migrations",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "ef",
+                "migrations",
+                "list",
+                "--project",
+                "${workspaceFolder}/webapp"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                
+            },
+            "group": "none"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "migrationName",
+            "type": "promptString",
+            "description": "Nom de la migration"
+        },
+        {
+            "id": "previousMigration",
+            "type": "promptString",
+            "description": "Nom de la migration vers laquelle revenir (ou '0' pour tout annuler)"
+        }
+    ]
+}

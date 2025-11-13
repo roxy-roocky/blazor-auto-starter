@@ -1,0 +1,32 @@
+@using webapp.Client.Managers
+
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@inject ThemeManager ThemeManager
+
+<div class="d-flex align-items-center @Classes">
+    <div><i class="fa-solid fa-sun"></i></div>
+    <div class="form-check form-switch m-0 px-1" style="min-height: 0;">
+        <input class="form-check-input m-0" type="checkbox" role="switch" id="themeSwitcher" checked=@(_currentTheme == ThemeManager.Theme.Dark)
+        @onchange="OnChange"
+        >
+    </div>
+    <div><i class="fa-solid fa-moon"></i></div>
+</div>
+
+@code {
+    [Parameter]
+    public string Classes {get;set;} = "";
+
+    private webapp.Client.Managers.ThemeManager.Theme _currentTheme;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _currentTheme = await ThemeManager.GetCurrentThemeAsync();
+    }
+
+    public async Task OnChange(ChangeEventArgs ev)
+    {
+        await ThemeManager.SwitchTheme((bool)ev.Value! ? ThemeManager.Theme.Dark : ThemeManager.Theme.Light);
+    }
+}
