@@ -1,9 +1,12 @@
+using html_generator;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using webapp.Client.Pages;
 using webapp.Components;
 using webapp.Components.Account;
+using webapp.Components.Pages;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +42,20 @@ builder.Services.AddSingleton<IEmailSender<main_datacontext.Identity.User>, Iden
 
 builder.Services.AddScoped<webapp.Managers.ThemeManager>();
 
+// Ajout des services
+
+// Ajout des jobCode
+builder.Services.AddBlazorHtmlGenerator();
+
+if(builder.Environment.IsDevelopment())
+{
+    builder.Services.AddScoped<jobcode.Managers.Emails.IEmailSender, jobcode.Managers.Emails.DbEmailSender>();
+}
+else
+{
+    builder.Services.AddScoped<jobcode.Managers.Emails.IEmailSender, jobcode.Managers.Emails.BrevoEmailSender>();
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -67,5 +84,33 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+
+
+// TESTS
+
+using(var scope = app.Services.CreateScope())
+{
+    var emailSender = scope.ServiceProvider.GetRequiredService<jobcode.Managers.Emails.IEmailSender>();
+    var htmlGenerator = scope.ServiceProvider.GetRequiredService<HtmlRendererService>();
+    await emailSender.SendEmailAsync(
+        to: ["baumann68nathan@gmail.com"],
+        subject: "Test de l'API Brevo",
+        htmlBody: await htmlGenerator.RenderComponentAsync<html_generator.Emails.Templates.SimpleActionEmailTemplate>( parameters =>
+        {
+            parameters.Add("Subject", "Test de l'API Brevo");
+            parameters.Add("Greeting", "Cher moi-même");
+            parameters.Add("ChildContent", new RenderFragment(
+                builder => builder.AddContent(0, new MarkupString(@"
+                    <p>Ceci est un simple test de l'API Brevo. Merci de ne pas le prendre en serieux.</p>
+                "))
+            ));
+            parameters.Add("CallToActionUrl", "https://www.google.com");
+            parameters.Add("CallToActionText", "Recherche sur Google");
+            parameters.Add("FooterText", "Ceci est un test généré par mon starter Blazor Auto 😜");
+        })
+    );
+}
+
+// END TESTS
 
 app.Run();

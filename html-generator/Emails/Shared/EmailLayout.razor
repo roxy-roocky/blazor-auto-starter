@@ -1,0 +1,155 @@
+@* Highly compatible email layout using table-based structure *@
+@* Compatible with Outlook, Gmail, Apple Mail, and other major email clients *@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@Title</title>
+    <style type="text/css">
+        /* Reset styles */
+        body {
+            margin: 0;
+            padding: 0;
+            min-width: 100%;
+            font-family: Arial, sans-serif;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        img {
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+            -ms-interpolation-mode: bicubic;
+        }
+        table {
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        td {
+            border-collapse: collapse;
+        }
+        /* Client-specific styles */
+        .ExternalClass {
+            width: 100%;
+        }
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+            line-height: 100%;
+        }
+        /* Outlook DPI fix */
+        @@media screen and (-webkit-min-device-pixel-ratio: 0) {
+            body {
+                -webkit-text-size-adjust: none;
+            }
+        }
+        /* Mobile styles */
+        @@media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+            }
+            .mobile-padding {
+                padding: 10px !important;
+            }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: @BackgroundColor;">
+    <!-- 100% background wrapper -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: @BackgroundColor;">
+        <tr>
+            <td align="center" style="padding: 20px 10px;">
+                <!-- Main email container (600px) -->
+                <table border="0" cellpadding="0" cellspacing="0" width="600" class="email-container" style="background-color: #ffffff; max-width: 600px;">
+
+                    @if (ShowHeader && HeaderContent != null)
+                    {
+                        <!-- Header Section -->
+                        <tr>
+                            <td align="center" style="padding: @HeaderPadding; background-color: @HeaderBackgroundColor;">
+                                @HeaderContent
+                            </td>
+                        </tr>
+                    }
+
+                    <!-- Main Content Section -->
+                    <tr>
+                        <td style="padding: @ContentPadding; background-color: @ContentBackgroundColor;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td>
+                                        @ChildContent
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    @if (ShowFooter && FooterContent != null)
+                    {
+                        <!-- Footer Section -->
+                        <tr>
+                            <td align="center" style="padding: @FooterPadding; background-color: @FooterBackgroundColor; color: @FooterTextColor; font-size: 12px;">
+                                @FooterContent
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "Email";
+
+    [Parameter]
+    public string BackgroundColor { get; set; } = "#f4f4f4";
+
+    [Parameter]
+    public string ContentBackgroundColor { get; set; } = "#ffffff";
+
+    [Parameter]
+    public string ContentPadding { get; set; } = "30px";
+
+    [Parameter]
+    public bool ShowHeader { get; set; } = true;
+
+    [Parameter]
+    public RenderFragment? HeaderContent { get; set; }
+
+    [Parameter]
+    public string HeaderBackgroundColor { get; set; } = "#007bff";
+
+    [Parameter]
+    public string HeaderPadding { get; set; } = "30px";
+
+    [Parameter]
+    public bool ShowFooter { get; set; } = true;
+
+    [Parameter]
+    public RenderFragment? FooterContent { get; set; }
+
+    [Parameter]
+    public string FooterBackgroundColor { get; set; } = "#333333";
+
+    [Parameter]
+    public string FooterTextColor { get; set; } = "#ffffff";
+
+    [Parameter]
+    public string FooterPadding { get; set; } = "20px";
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

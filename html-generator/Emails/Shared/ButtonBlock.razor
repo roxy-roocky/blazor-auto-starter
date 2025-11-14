@@ -1,0 +1,209 @@
+@* Reusable button block component for email templates *@
+@* Uses table-based layout with bulletproof button technique for maximum compatibility *@
+@* Works across all major email clients including Outlook *@
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: @MarginBottom;">
+    <tr>
+        <td align="@Align" style="padding: @Padding;">
+            <!-- Bulletproof Button : BEGIN -->
+            <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin: 0 auto;">
+                <tr>
+                    <td style="border-radius: @BorderRadius; background: @BackgroundColor; text-align: center;">
+                        <a href="@Href"
+                           target="_blank"
+                           style="background: @BackgroundColor;
+                                  border: @BorderWidth solid @BorderColor;
+                                  font-family: @FontFamily;
+                                  font-size: @FontSize;
+                                  font-weight: @FontWeight;
+                                  line-height: 1.1;
+                                  text-align: center;
+                                  text-decoration: none;
+                                  display: block;
+                                  border-radius: @BorderRadius;
+                                  padding: @ButtonPadding;
+                                  color: @TextColor;
+                                  mso-padding-alt: 0px;
+                                  min-width: @MinWidth;">
+                            <!--[if mso]>
+                            <i style="letter-spacing: @MsoPaddingHack; mso-font-width: -100%; mso-text-raise: 30pt;">&nbsp;</i>
+                            <![endif]-->
+                            <span style="color: @TextColor; mso-text-raise: 15pt;">
+                                @if (!string.IsNullOrEmpty(Text))
+                                {
+                                    @Text
+                                }
+                                else if (ChildContent != null)
+                                {
+                                    @ChildContent
+                                }
+                            </span>
+                            <!--[if mso]>
+                            <i style="letter-spacing: @MsoPaddingHack; mso-font-width: -100%;">&nbsp;</i>
+                            <![endif]-->
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            <!-- Bulletproof Button : END -->
+
+            @if (!string.IsNullOrEmpty(SubText))
+            {
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 10px;">
+                    <tr>
+                        <td align="@Align" style="font-family: @FontFamily; font-size: @SubTextSize; color: @SubTextColor; line-height: 1.4;">
+                            @SubText
+                        </td>
+                    </tr>
+                </table>
+            }
+        </td>
+    </tr>
+</table>
+
+@code {
+    /// <summary>
+    /// Button URL (required)
+    /// </summary>
+    [Parameter]
+    public string Href { get; set; } = "#";
+
+    /// <summary>
+    /// Button text content
+    /// </summary>
+    [Parameter]
+    public string? Text { get; set; }
+
+    /// <summary>
+    /// Advanced content using RenderFragment
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Optional text displayed below the button
+    /// </summary>
+    [Parameter]
+    public string? SubText { get; set; }
+
+    /// <summary>
+    /// SubText font size (default: 12px)
+    /// </summary>
+    [Parameter]
+    public string SubTextSize { get; set; } = "12px";
+
+    /// <summary>
+    /// SubText color (default: #999999)
+    /// </summary>
+    [Parameter]
+    public string SubTextColor { get; set; } = "#999999";
+
+    /// <summary>
+    /// Button alignment: left, center, right (default: center)
+    /// </summary>
+    [Parameter]
+    public string Align { get; set; } = "center";
+
+    /// <summary>
+    /// Button background color (default: #007bff)
+    /// </summary>
+    [Parameter]
+    public string BackgroundColor { get; set; } = "#007bff";
+
+    /// <summary>
+    /// Button text color (default: #ffffff)
+    /// </summary>
+    [Parameter]
+    public string TextColor { get; set; } = "#ffffff";
+
+    /// <summary>
+    /// Font family (default: Arial, sans-serif)
+    /// </summary>
+    [Parameter]
+    public string FontFamily { get; set; } = "Arial, sans-serif";
+
+    /// <summary>
+    /// Font size (default: 16px)
+    /// </summary>
+    [Parameter]
+    public string FontSize { get; set; } = "16px";
+
+    /// <summary>
+    /// Font weight (default: bold)
+    /// </summary>
+    [Parameter]
+    public string FontWeight { get; set; } = "bold";
+
+    /// <summary>
+    /// Internal button padding (default: 14px 28px)
+    /// </summary>
+    [Parameter]
+    public string ButtonPadding { get; set; } = "14px 28px";
+
+    /// <summary>
+    /// Border radius for rounded corners (default: 5px)
+    /// </summary>
+    [Parameter]
+    public string BorderRadius { get; set; } = "5px";
+
+    /// <summary>
+    /// Border width (default: 0px)
+    /// </summary>
+    [Parameter]
+    public string BorderWidth { get; set; } = "0px";
+
+    /// <summary>
+    /// Border color (default: same as background)
+    /// </summary>
+    [Parameter]
+    public string? BorderColor { get; set; }
+
+    /// <summary>
+    /// Minimum button width (default: 200px)
+    /// </summary>
+    [Parameter]
+    public string MinWidth { get; set; } = "200px";
+
+    /// <summary>
+    /// Padding around the button block (default: 10px 0)
+    /// </summary>
+    [Parameter]
+    public string Padding { get; set; } = "10px 0";
+
+    /// <summary>
+    /// Bottom margin for spacing (default: 20px)
+    /// </summary>
+    [Parameter]
+    public string MarginBottom { get; set; } = "20px";
+
+    /// <summary>
+    /// Outlook-specific padding hack for proper button spacing
+    /// </summary>
+    private string MsoPaddingHack
+    {
+        get
+        {
+            // Calculate approximate letter spacing based on button padding
+            // This is a workaround for Outlook's poor CSS support
+            var padding = ButtonPadding.Split(' ');
+            if (padding.Length >= 2)
+            {
+                var horizontalPadding = padding[1].Replace("px", "");
+                if (int.TryParse(horizontalPadding, out int pixels))
+                {
+                    return $"{pixels}px";
+                }
+            }
+            return "28px";
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        // Use background color as default border color if not specified
+        if (string.IsNullOrEmpty(BorderColor))
+        {
+            BorderColor = BackgroundColor;
+        }
+    }
+}

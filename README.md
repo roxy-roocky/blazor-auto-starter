@@ -2,12 +2,40 @@
 
 Template de démarrage moderne pour application web Blazor .NET 9 avec mode de rendu automatique (Auto), combinant Server-Side Rendering (SSR) et WebAssembly pour des performances optimales.
 
+## Table des matières
+
+- [Fonctionnalités](#fonctionnalités)
+- [Prérequis](#prérequis)
+- [Initialisation du projet](#initialisation-du-projet)
+  - [1. Cloner le dépôt](#1-cloner-le-dépôt)
+  - [2. Installer les dépendances npm](#2-installer-les-dépendances-npm)
+  - [3. Configurer les fichiers appsettings](#3-configurer-les-fichiers-appsettings)
+  - [4. Restaurer les packages NuGet](#4-restaurer-les-packages-nuget)
+  - [5. Créer et appliquer les migrations de base de données](#5-créer-et-appliquer-les-migrations-de-base-de-données)
+  - [6. Lancer l'application](#6-lancer-lapplication)
+  - [6. Développement avec hot-reload](#6-développement-avec-hot-reload)
+- [Structure du projet](#structure-du-projet)
+- [Technologies utilisées](#technologies-utilisées)
+- [Exemples de rendu](#exemples-de-rendu)
+  - [📱 Page Counter - Rendu côté client (WebAssembly)](#-page-counter---rendu-côté-client-webassembly)
+  - [🌤️ Page Weather - Rendu côté serveur (Server-Side)](#️-page-weather---rendu-côté-serveur-server-side)
+  - [📧 Page Email Templates - Prévisualisation des templates](#-page-email-templates---prévisualisation-des-templates)
+- [Configuration](#configuration)
+  - [Fichiers appsettings](#fichiers-appsettings)
+  - [Thèmes](#thèmes)
+- [Développement](#développement)
+  - [Extensions VSCode recommandées](#extensions-vscode-recommandées)
+  - [Tâches VSCode disponibles](#tâches-vscode-disponibles)
+  - [Commandes en ligne](#commandes-en-ligne)
+- [Licence](#licence)
+
 ## Fonctionnalités
 
 - 🔐 **Authentification complète** - Système d'identité ASP.NET Core avec gestion des utilisateurs
 - 🎨 **Thèmes personnalisables** - Basculement dynamique entre thème clair et sombre avec persistance par cookies
 - ⚡ **Rendu hybride** - Mode Auto combinant rendu serveur (InteractiveServer) et WebAssembly (InteractiveWebAssembly)
 - 💾 **Base de données SQLite** - Entity Framework Core avec migrations pour la gestion des données
+- 📧 **Système d'envoi d'emails** - Templates d'emails personnalisables avec composants Blazor et intégration Brevo API
 - 🎭 **Bootstrap 5** - Interface utilisateur responsive avec intégration Bootstrap 5.3
 - ✨ **Font Awesome** - Bibliothèque d'icônes complète (v7.0)
 - 🔧 **SASS** - Compilation automatique des styles SASS
@@ -55,7 +83,17 @@ cd ../webapp.Client/wwwroot
 cp appsettings.example.json appsettings.json
 ```
 
-Éditez ensuite ces fichiers selon vos besoins (chaînes de connexion, paramètres d'environnement, etc.).
+Éditez ensuite ces fichiers selon vos besoins (chaînes de connexion, clé API Brevo, etc.). Pour utiliser l'envoi d'emails en production, ajoutez votre clé API Brevo dans `webapp/appsettings.json` :
+
+```json
+{
+  "Brevo": {
+    "ApiKey": "votre-clé-api-brevo"
+  }
+}
+```
+
+> **Note :** En développement, les emails sont stockés dans la base de données (table `Emails`). En production, ils sont envoyés via l'API Brevo.
 
 ### 4. Restaurer les packages NuGet
 
@@ -94,13 +132,13 @@ Les fichiers `.js` et `.css` sont surveillés automatiquement grâce à la confi
 
 ### 📁 Solution principale (`webapp.sln`)
 
-Le projet est organisé en trois projets distincts :
+Le projet est organisé en cinq projets distincts :
 
 #### **webapp** - Application serveur principale
 - **Components/** - Composants Razor partagés
   - **Account/** - Composants d'authentification et gestion de compte
   - **Layout/** - Composants de mise en page (navigation, footer, etc.)
-  - **Pages/** - Pages principales (Home, Weather, Error)
+  - **Pages/** - Pages principales (Home, Weather, Error, EmailTemplates)
 - **Managers/** - Services et gestionnaires (ex: ThemeManager)
 - **wwwroot/** - Ressources statiques
   - **js/** - Scripts JavaScript (ThemeSwitcher.js)
@@ -117,10 +155,24 @@ Le projet est organisé en trois projets distincts :
 - **Program.cs** - Configuration WebAssembly
 
 #### **main-datacontext** - Couche de données
+- **Emails/** - Modèles de données pour les emails
 - Contexte Entity Framework Core
 - Modèles de données
 - Configuration Identity
 - Gestion des migrations
+
+#### **html-generator** - Génération de templates HTML
+- **HtmlRendererService.cs** - Service de rendu de composants Blazor en HTML
+- **Emails/** - Templates d'emails réutilisables
+  - **Templates/** - Composants de templates complets (SimpleActionEmailTemplate, etc.)
+  - **Shared/** - Composants partagés (EmailLayout, TextBlock, ButtonBlock)
+- Compatible avec tous les clients email grâce aux tables HTML
+
+#### **jobcode** - Services métier
+- **Managers/Emails/** - Gestionnaires d'envoi d'emails
+  - **IEmailSender** - Interface d'envoi d'emails
+  - **DbEmailSender** - Stockage des emails en base de données (développement)
+  - **BrevoEmailSender** - Envoi via API Brevo (production)
 
 ### 🔄 Flux de compilation
 
@@ -157,6 +209,15 @@ La page [Weather](webapp/Components/Pages/Weather.razor) (`/weather`) utilise le
 - Permet un chargement progressif de l'interface
 - Réduit la charge côté client
 - Idéale pour l'affichage de données dynamiques
+
+### 📧 Page Email Templates - Prévisualisation des templates
+
+La page [EmailTemplates](webapp/Components/Pages/EmailTemplates.razor) (`/email-templates`) permet de prévisualiser tous les templates d'emails disponibles. Cette page :
+- Affiche les templates dans un accordéon interactif
+- Démontre l'utilisation des composants `EmailLayout`, `TextBlock` et `ButtonBlock`
+- Présente des exemples concrets d'emails (bienvenue, notification, confirmation)
+- Nécessite l'authentification (`@attribute [Authorize]`)
+- Utilise des composants réutilisables compatibles avec tous les clients email
 
 ## Configuration
 

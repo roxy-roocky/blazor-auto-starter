@@ -35,6 +35,8 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="../html-generator/html-generator.csproj" />
+    <ProjectReference Include="../jobcode/jobcode.csproj" />
     <ProjectReference Include="../main-datacontext/main-datacontext.csproj" />
     <ProjectReference Include="..\webapp.Client\webapp.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.10" />
