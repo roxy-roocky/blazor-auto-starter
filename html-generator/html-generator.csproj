@@ -9,10 +9,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.11" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot/" />
+    <ProjectReference Include="../main-datacontext/main-datacontext.csproj" />
   </ItemGroup>
 
 </Project>

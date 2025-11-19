@@ -1,3 +1,4 @@
+@using html_generator.Emails
 @* Reusable button block component for email templates *@
 @* Uses table-based layout with bulletproof button technique for maximum compatibility *@
 @* Works across all major email clients including Outlook *@
@@ -8,27 +9,27 @@
             <!-- Bulletproof Button : BEGIN -->
             <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin: 0 auto;">
                 <tr>
-                    <td style="border-radius: @BorderRadius; background: @BackgroundColor; text-align: center;">
+                    <td style="border-radius: @BorderRadius; background: @ResolvedBackgroundColor; text-align: center;">
                         <a href="@Href"
                            target="_blank"
-                           style="background: @BackgroundColor;
-                                  border: @BorderWidth solid @BorderColor;
-                                  font-family: @FontFamily;
-                                  font-size: @FontSize;
-                                  font-weight: @FontWeight;
+                           style="background: @ResolvedBackgroundColor;
+                                  border: @BorderWidth solid @ResolvedBorderColor;
+                                  font-family: @ResolvedFontFamily;
+                                  font-size: @ResolvedFontSize;
+                                  font-weight: @ResolvedFontWeight;
                                   line-height: 1.1;
                                   text-align: center;
                                   text-decoration: none;
                                   display: block;
                                   border-radius: @BorderRadius;
                                   padding: @ButtonPadding;
-                                  color: @TextColor;
+                                  color: @ResolvedTextColor;
                                   mso-padding-alt: 0px;
                                   min-width: @MinWidth;">
                             <!--[if mso]>
                             <i style="letter-spacing: @MsoPaddingHack; mso-font-width: -100%; mso-text-raise: 30pt;">&nbsp;</i>
                             <![endif]-->
-                            <span style="color: @TextColor; mso-text-raise: 15pt;">
+                            <span style="color: @ResolvedTextColor; mso-text-raise: 15pt;">
                                 @if (!string.IsNullOrEmpty(Text))
                                 {
                                     @Text
@@ -51,7 +52,7 @@
             {
                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 10px;">
                     <tr>
-                        <td align="@Align" style="font-family: @FontFamily; font-size: @SubTextSize; color: @SubTextColor; line-height: 1.4;">
+                        <td align="@Align" style="font-family: @ResolvedFontFamily; font-size: @SubTextSize; color: @ResolvedSubTextColor; line-height: 1.4;">
                             @SubText
                         </td>
                     </tr>
@@ -93,10 +94,10 @@
     public string SubTextSize { get; set; } = "12px";
 
     /// <summary>
-    /// SubText color (default: #999999)
+    /// SubText color (default: from config)
     /// </summary>
     [Parameter]
-    public string SubTextColor { get; set; } = "#999999";
+    public string? SubTextColor { get; set; }
 
     /// <summary>
     /// Button alignment: left, center, right (default: center)
@@ -105,34 +106,42 @@
     public string Align { get; set; } = "center";
 
     /// <summary>
-    /// Button background color (default: #007bff)
+    /// Button background color (default: from config)
     /// </summary>
     [Parameter]
-    public string BackgroundColor { get; set; } = "#007bff";
+    public string? BackgroundColor { get; set; }
 
     /// <summary>
-    /// Button text color (default: #ffffff)
+    /// Button text color (default: from config)
     /// </summary>
     [Parameter]
-    public string TextColor { get; set; } = "#ffffff";
+    public string? TextColor { get; set; }
 
     /// <summary>
-    /// Font family (default: Arial, sans-serif)
+    /// Font family (default: from config)
     /// </summary>
     [Parameter]
-    public string FontFamily { get; set; } = "Arial, sans-serif";
+    public string? FontFamily { get; set; }
 
     /// <summary>
-    /// Font size (default: 16px)
+    /// Font size (default: from config)
     /// </summary>
     [Parameter]
-    public string FontSize { get; set; } = "16px";
+    public string? FontSize { get; set; }
 
     /// <summary>
-    /// Font weight (default: bold)
+    /// Font weight (default: from config)
     /// </summary>
     [Parameter]
-    public string FontWeight { get; set; } = "bold";
+    public string? FontWeight { get; set; }
+
+    private string ResolvedBackgroundColor => BackgroundColor ?? EmailStyleConfig.ButtonBackgroundColor;
+    private string ResolvedTextColor => TextColor ?? EmailStyleConfig.ButtonTextColor;
+    private string ResolvedSubTextColor => SubTextColor ?? EmailStyleConfig.ButtonSubTextColor;
+    private string ResolvedFontFamily => FontFamily ?? EmailStyleConfig.FontFamily;
+    private string ResolvedFontSize => FontSize ?? EmailStyleConfig.FontSize;
+    private string ResolvedFontWeight => FontWeight ?? EmailStyleConfig.ButtonFontWeight;
+    private string ResolvedBorderColor => BorderColor ?? ResolvedBackgroundColor;
 
     /// <summary>
     /// Internal button padding (default: 14px 28px)
@@ -198,12 +207,4 @@
         }
     }
 
-    protected override void OnInitialized()
-    {
-        // Use background color as default border color if not specified
-        if (string.IsNullOrEmpty(BorderColor))
-        {
-            BorderColor = BackgroundColor;
-        }
-    }
 }

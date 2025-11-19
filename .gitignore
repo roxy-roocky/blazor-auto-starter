@@ -1,5 +1,9 @@
 # Build results
+
 [Dd]ebug/
+# (on évite d'ignorer les composants qui sont dans le dossier debug de l'appli)
+!webapp/Components/Debug
+
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/

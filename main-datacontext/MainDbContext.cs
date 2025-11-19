@@ -16,5 +16,5 @@ public class MainDbContext : IdentityDbContext<Identity.User, Identity.Role, lon
         
     }
 
-    public DbSet<Emails.DbEmail> Emails { get; set; }
+    public DbSet<Emails.DbEmail> DatabaseEmails { get; set; }
 }

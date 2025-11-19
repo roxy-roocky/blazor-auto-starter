@@ -6,6 +6,7 @@ namespace jobcode.Managers.Emails;
 
 public class DbEmailSender : IEmailSender
 {
+    public static event EventHandler<main_datacontext.Emails.DbEmail>? EmailSent;
     protected readonly main_datacontext.MainDbContext _dbContext;
     protected readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
     protected readonly ILogger<DbEmailSender> _logger;
@@ -28,12 +29,16 @@ public class DbEmailSender : IEmailSender
             HtmlContent = htmlBody,
             SenderEmail = fromEmail ?? _configuration["Emails:Senders:Default:Email"]!,
             SenderName = fromName ?? _configuration["Emails:Senders:Default:Name"]!,
+            SentDate = DateTime.UtcNow
         };
 
         try
         {
-            await _dbContext.Emails.AddAsync(dbEmail);
+            await _dbContext.DatabaseEmails.AddAsync(dbEmail);
             await _dbContext.SaveChangesAsync();
+
+            _dbContext.Entry(dbEmail).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            EmailSent?.Invoke(this, dbEmail);
         }
         catch (Exception ex)
         {

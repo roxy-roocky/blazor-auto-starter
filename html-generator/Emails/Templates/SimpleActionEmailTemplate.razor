@@ -3,8 +3,6 @@
 @* This demonstrates how to use EmailLayout, TextBlock, and ButtonBlock *@
 
 <EmailLayout Title="@Subject"
-             BackgroundColor="#f4f4f4"
-             ContentPadding="40px"
              ShowHeader="true"
              ShowFooter="true">
 
@@ -23,7 +21,6 @@
         {
             <TextBlock Heading="@Greeting"
                        HeadingSize="24px"
-                       HeadingColor="#333333"
                        Text=""
                        MarginBottom="10px" />
         }
@@ -33,13 +30,13 @@
 
         @if (!string.IsNullOrEmpty(CallToActionUrl))
         {
-            <ButtonBlock Href="@CallToActionUrl"
+            <ButtonBlock Href="@(((MarkupString)CallToActionUrl).ToString())"
                          Text="@CallToActionText"
-                         BackgroundColor="#007bff"
-                         TextColor="#ffffff"
                          Align="center"
                          BorderRadius="5px"
                          MinWidth="200px"
+                         BackgroundColor="#975b45"
+                         BorderColor="#975b45"
                          MarginBottom="10px" />
         }
     </ChildContent>
@@ -54,7 +51,7 @@
                     }
                     else
                     {
-                        <text>&copy; @DateTime.Now.Year - All rights reserved</text>
+                        <text>Blazor Auto Starter - &copy; @DateTime.Now.Year - All rights reserved</text>
                     }
                 </td>
             </tr>

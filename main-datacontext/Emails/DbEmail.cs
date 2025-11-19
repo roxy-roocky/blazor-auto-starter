@@ -19,4 +19,6 @@ public class DbEmail
     public string? HtmlContent { get; set; }
     [Required]
     public DateTime SentDate { get; set; }
+
+    public bool Read { get; set; } = false;
 }
