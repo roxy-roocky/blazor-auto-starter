@@ -23,6 +23,7 @@ Template de démarrage moderne pour application web Blazor .NET 9 avec mode de r
 - [Configuration](#configuration)
   - [Fichiers appsettings](#fichiers-appsettings)
   - [Thèmes](#thèmes)
+  - [Emails](#emails)
 - [Développement](#développement)
   - [Extensions VSCode recommandées](#extensions-vscode-recommandées)
   - [Tâches VSCode disponibles](#tâches-vscode-disponibles)
@@ -137,13 +138,16 @@ Le projet est organisé en cinq projets distincts :
 #### **webapp** - Application serveur principale
 - **Components/** - Composants Razor partagés
   - **Account/** - Composants d'authentification et gestion de compte
+  - **Debug/** - Outils de débogage (EmailList, EmailTemplates)
   - **Layout/** - Composants de mise en page (navigation, footer, etc.)
-  - **Pages/** - Pages principales (Home, Weather, Error, EmailTemplates)
-- **Managers/** - Services et gestionnaires (ex: ThemeManager)
+  - **Pages/** - Pages principales (Home, Weather, Error)
+- **Managers/** - Services et gestionnaires
+  - **Account/** - Gestionnaires de compte (EmailManager pour les emails transactionnels)
 - **wwwroot/** - Ressources statiques
   - **js/** - Scripts JavaScript (ThemeSwitcher.js)
   - **bootstrap/** - Fichiers Bootstrap compilés
   - **fontawesome/** - Styles et webfonts Font Awesome
+  - **logo.svg/png** - Logo de l'application
 - **Styles/** - Fichiers sources SASS
 - **Program.cs** - Point d'entrée et configuration des services
 
@@ -164,8 +168,10 @@ Le projet est organisé en cinq projets distincts :
 #### **html-generator** - Génération de templates HTML
 - **HtmlRendererService.cs** - Service de rendu de composants Blazor en HTML
 - **Emails/** - Templates d'emails réutilisables
+  - **Account/** - Templates pour le système de compte (Confirmation, PasswordReset, PasswordResetLink)
   - **Templates/** - Composants de templates complets (SimpleActionEmailTemplate, etc.)
   - **Shared/** - Composants partagés (EmailLayout, TextBlock, ButtonBlock)
+  - **EmailStyleConfig.cs** - Configuration centralisée des couleurs et styles des emails
 - Compatible avec tous les clients email grâce aux tables HTML
 
 #### **jobcode** - Services métier
@@ -210,14 +216,19 @@ La page [Weather](webapp/Components/Pages/Weather.razor) (`/weather`) utilise le
 - Réduit la charge côté client
 - Idéale pour l'affichage de données dynamiques
 
-### 📧 Page Email Templates - Prévisualisation des templates
+### 📧 Outils de débogage Email
 
-La page [EmailTemplates](webapp/Components/Pages/EmailTemplates.razor) (`/email-templates`) permet de prévisualiser tous les templates d'emails disponibles. Cette page :
-- Affiche les templates dans un accordéon interactif
+Le menu Debug (accessible aux utilisateurs authentifiés) contient des outils pour tester les emails :
+
+**Page Email Templates** (`/Debug/EmailTemplates`) :
+- Prévisualise tous les templates d'emails disponibles
+- Affiche les templates dans un accordéon interactif avec iframe
 - Démontre l'utilisation des composants `EmailLayout`, `TextBlock` et `ButtonBlock`
-- Présente des exemples concrets d'emails (bienvenue, notification, confirmation)
-- Nécessite l'authentification (`@attribute [Authorize]`)
-- Utilise des composants réutilisables compatibles avec tous les clients email
+
+**Page Email List** (`/Debug/EmailList`) :
+- Affiche tous les emails stockés en base de données (mode développement)
+- Permet de visualiser le contenu HTML des emails envoyés
+- Utile pour tester le système d'emails sans configuration SMTP
 
 ## Configuration
 
@@ -235,6 +246,37 @@ Le système de thèmes est géré **côté client** via le [ThemeManager](webapp
 - Les attributs `data-bs-theme` de Bootstrap pour le basculement clair/sombre
 - La persistance des préférences utilisateur via cookies
 - Le script [ThemeSwitcher.js](webapp/wwwroot/js/ThemeSwitcher.js) pour l'interaction JavaScript
+
+### Emails
+
+Le projet intègre un système complet d'envoi d'emails transactionnels avec templates Blazor :
+
+**Architecture :**
+- **Templates Blazor** - Les emails sont construits avec des composants Blazor dans [html-generator/Emails/](html-generator/Emails/), rendus en HTML via `HtmlRendererService`
+- **Composants réutilisables** - `EmailLayout`, `TextBlock`, `ButtonBlock` pour créer des emails responsives compatibles tous clients
+- **Configuration centralisée** - Couleurs et styles définis dans [EmailStyleConfig.cs](html-generator/Emails/EmailStyleConfig.cs)
+
+**Modes d'envoi :**
+- **Développement** - Les emails sont stockés en base de données (table `Emails`) via `DbEmailSender`, consultables dans `/Debug/EmailList`
+- **Production** - Envoi via l'API Brevo avec `BrevoEmailSender`, nécessite une clé API dans `appsettings.json`
+
+**Templates disponibles :**
+- Confirmation d'email
+- Réinitialisation de mot de passe
+- Template générique `SimpleActionEmailTemplate` pour les actions utilisateur
+
+**Utilisation :**
+```csharp
+// Injection du service
+private readonly IEmailSender _emailSender;
+
+// Envoi d'un email
+await _emailSender.SendEmailAsync(
+    toEmail: "user@example.com",
+    subject: "Sujet",
+    htmlMessage: htmlContent
+);
+```
 
 ## Développement
 
