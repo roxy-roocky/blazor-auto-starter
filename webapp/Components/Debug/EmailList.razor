@@ -17,39 +17,45 @@
     <h1 class="mb-4">Liste des Emails</h1>
 
     <!-- Filtres -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">Filtres</h5>
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <label for="filterRecipient" class="form-label">Destinataire</label>
-                    <input type="text" class="form-control" id="filterRecipient"
-                           @bind="_filterRecipient" @bind:event="oninput"
-                           @onkeydown="HandleKeyPress"
-                           placeholder="Rechercher un destinataire...">
-                </div>
-                <div class="col-md-4">
-                    <label for="filterSubject" class="form-label">Sujet</label>
-                    <input type="text" class="form-control" id="filterSubject"
-                           @bind="_filterSubject" @bind:event="oninput"
-                           @onkeydown="HandleKeyPress"
-                           placeholder="Rechercher un sujet...">
-                </div>
-                <div class="col-md-2">
-                    <label for="filterUnread" class="form-label">Statut</label>
-                    <select class="form-select" id="filterUnread" @bind="_filterUnread" @bind:after="ApplyFilters">
-                        <option value="">Tous</option>
-                        <option value="unread">Non lus</option>
-                        <option value="read">Lus</option>
-                    </select>
-                </div>
-                <div class="col-md-2 d-flex align-items-end gap-2">
-                    <button class="btn btn-primary flex-fill" @onclick="ApplyFilters">
-                        <i class="fa-solid fa-filter me-2"></i>Filtrer
-                    </button>
-                    <button class="btn btn-outline-secondary" @onclick="ClearFilters" title="Effacer les filtres">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
+    <div class="accordion mb-4">
+        <div class="accordion-item">
+            <h5 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#email-list-filter" aria-expanded="true" aria-controls="email-list-filter">
+                    Filtres
+                </button>
+            </h5>
+            <div id="email-list-filter" class="accordion-collapse collapse">
+                <div class="row m-3 mb-4 g-2">
+                    <div class="col-lg-4 col-md-6 mt-3 mt-lg-0">
+                        <label for="filterRecipient" class="form-label">Destinataire</label>
+                        <input type="text" class="form-control" id="filterRecipient"
+                            @bind="_filterRecipient" @bind:event="oninput"
+                            @onkeydown="HandleKeyPress"
+                            placeholder="Rechercher un destinataire...">
+                    </div>
+                    <div class="col-lg-4 col-md-6 mt-3 mt-lg-0">
+                        <label for="filterSubject" class="form-label">Sujet</label>
+                        <input type="text" class="form-control" id="filterSubject"
+                            @bind="_filterSubject" @bind:event="oninput"
+                            @onkeydown="HandleKeyPress"
+                            placeholder="Rechercher un sujet...">
+                    </div>
+                    <div class="col-lg-2 col-md-6 mt-3 mt-lg-0">
+                        <label for="filterUnread" class="form-label">Statut</label>
+                        <select class="form-select" id="filterUnread" @bind="_filterUnread" @bind:after="ApplyFilters">
+                            <option value="">Tous</option>
+                            <option value="unread">Non lus</option>
+                            <option value="read">Lus</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-md-6 mt-3 mt-lg-0 d-flex align-items-end gap-2">
+                        <button class="btn btn-primary btn-sm flex-fill" @onclick="ApplyFilters">
+                            <i class="fa-solid fa-filter me-2"></i>Filtrer
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm" @onclick="ClearFilters" title="Effacer les filtres">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -122,7 +128,7 @@
         </div>
 
         <!-- Pagination -->
-        <nav aria-label="Pagination des emails">
+        <nav aria-label="Pagination des emails" class="mt-2">
             <ul class="pagination justify-content-center">
                 <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
                     <button class="page-link" @onclick="() => GoToPage(_currentPage - 1)" disabled="@(_currentPage == 1)">
