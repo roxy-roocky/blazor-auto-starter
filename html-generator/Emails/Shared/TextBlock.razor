@@ -9,7 +9,7 @@
             {
                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
                     <tr>
-                        <td style="font-family: @ResolvedFontFamily; font-size: @ResolvedHeadingSize; color: @ResolvedHeadingColor; font-weight: bold; line-height: @HeadingLineHeight; margin: 0; padding-bottom: @HeadingMarginBottom;">
+                        <td style="font-family: @FontFamily; font-size: @HeadingSize; color: @HeadingColor; font-weight: bold; line-height: @HeadingLineHeight; margin: 0; padding-bottom: @HeadingMarginBottom;">
                             @Heading
                         </td>
                     </tr>
@@ -18,7 +18,7 @@
 
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
-                    <td style="font-family: @ResolvedFontFamily; font-size: @ResolvedFontSize; color: @ResolvedTextColor; line-height: @LineHeight; margin: 0;">
+                    <td style="font-family: @FontFamily; font-size: @FontSize; color: @TextColor; line-height: @LineHeight; margin: 0;">
                         @if (ChildContent != null)
                         {
                             @ChildContent
@@ -45,13 +45,13 @@
     /// Heading font size (default: from config)
     /// </summary>
     [Parameter]
-    public string? HeadingSize { get; set; }
+    public string HeadingSize { get; set; } = EmailStyleConfig.HeadingSize;
 
     /// <summary>
     /// Heading color (default: from config)
     /// </summary>
     [Parameter]
-    public string? HeadingColor { get; set; }
+    public string HeadingColor { get; set; } = EmailStyleConfig.HeadingColor;
 
     /// <summary>
     /// Heading line height (default: 1.3)
@@ -87,19 +87,19 @@
     /// Font family (default: from config)
     /// </summary>
     [Parameter]
-    public string? FontFamily { get; set; }
+    public string FontFamily { get; set; } = EmailStyleConfig.FontFamily;
 
     /// <summary>
     /// Font size (default: from config)
     /// </summary>
     [Parameter]
-    public string? FontSize { get; set; }
+    public string FontSize { get; set; } = EmailStyleConfig.FontSize;
 
     /// <summary>
     /// Text color (default: from config)
     /// </summary>
     [Parameter]
-    public string? TextColor { get; set; }
+    public string TextColor { get; set; } = EmailStyleConfig.TextColor;
 
     /// <summary>
     /// Line height for better readability (default: 1.6)
@@ -119,10 +119,4 @@
     [Parameter]
     public string MarginBottom { get; set; } = "20px";
 
-    // Resolved properties using EmailStyleConfig defaults
-    private string ResolvedFontFamily => FontFamily ?? EmailStyleConfig.FontFamily;
-    private string ResolvedFontSize => FontSize ?? EmailStyleConfig.FontSize;
-    private string ResolvedTextColor => TextColor ?? EmailStyleConfig.TextColor;
-    private string ResolvedHeadingColor => HeadingColor ?? EmailStyleConfig.HeadingColor;
-    private string ResolvedHeadingSize => HeadingSize ?? EmailStyleConfig.HeadingSize;
 }

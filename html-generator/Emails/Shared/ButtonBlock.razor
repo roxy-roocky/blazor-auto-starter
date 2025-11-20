@@ -9,27 +9,27 @@
             <!-- Bulletproof Button : BEGIN -->
             <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin: 0 auto;">
                 <tr>
-                    <td style="border-radius: @BorderRadius; background: @ResolvedBackgroundColor; text-align: center;">
+                    <td style="border-radius: @BorderRadius; background: @BackgroundColor; text-align: center;">
                         <a href="@Href"
                            target="_blank"
-                           style="background: @ResolvedBackgroundColor;
+                           style="background: @BackgroundColor;
                                   border: @BorderWidth solid @ResolvedBorderColor;
-                                  font-family: @ResolvedFontFamily;
-                                  font-size: @ResolvedFontSize;
-                                  font-weight: @ResolvedFontWeight;
+                                  font-family: @FontFamily;
+                                  font-size: @FontSize;
+                                  font-weight: @FontWeight;
                                   line-height: 1.1;
                                   text-align: center;
                                   text-decoration: none;
                                   display: block;
                                   border-radius: @BorderRadius;
                                   padding: @ButtonPadding;
-                                  color: @ResolvedTextColor;
+                                  color: @TextColor;
                                   mso-padding-alt: 0px;
                                   min-width: @MinWidth;">
                             <!--[if mso]>
                             <i style="letter-spacing: @MsoPaddingHack; mso-font-width: -100%; mso-text-raise: 30pt;">&nbsp;</i>
                             <![endif]-->
-                            <span style="color: @ResolvedTextColor; mso-text-raise: 15pt;">
+                            <span style="color: @TextColor; mso-text-raise: 15pt;">
                                 @if (!string.IsNullOrEmpty(Text))
                                 {
                                     @Text
@@ -52,7 +52,7 @@
             {
                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 10px;">
                     <tr>
-                        <td align="@Align" style="font-family: @ResolvedFontFamily; font-size: @SubTextSize; color: @ResolvedSubTextColor; line-height: 1.4;">
+                        <td align="@Align" style="font-family: @FontFamily; font-size: @SubTextSize; color: @SubTextColor; line-height: 1.4;">
                             @SubText
                         </td>
                     </tr>
@@ -97,7 +97,7 @@
     /// SubText color (default: from config)
     /// </summary>
     [Parameter]
-    public string? SubTextColor { get; set; }
+    public string SubTextColor { get; set; } = EmailStyleConfig.ButtonSubTextColor;
 
     /// <summary>
     /// Button alignment: left, center, right (default: center)
@@ -109,39 +109,33 @@
     /// Button background color (default: from config)
     /// </summary>
     [Parameter]
-    public string? BackgroundColor { get; set; }
+    public string BackgroundColor { get; set; } = EmailStyleConfig.ButtonBackgroundColor;
 
     /// <summary>
     /// Button text color (default: from config)
     /// </summary>
     [Parameter]
-    public string? TextColor { get; set; }
+    public string TextColor { get; set; } = EmailStyleConfig.ButtonTextColor;
 
     /// <summary>
     /// Font family (default: from config)
     /// </summary>
     [Parameter]
-    public string? FontFamily { get; set; }
+    public string FontFamily { get; set; } = EmailStyleConfig.FontFamily;
 
     /// <summary>
     /// Font size (default: from config)
     /// </summary>
     [Parameter]
-    public string? FontSize { get; set; }
+    public string FontSize { get; set; } = EmailStyleConfig.FontSize;
 
     /// <summary>
     /// Font weight (default: from config)
     /// </summary>
     [Parameter]
-    public string? FontWeight { get; set; }
+    public string FontWeight { get; set; } = EmailStyleConfig.ButtonFontWeight;
 
-    private string ResolvedBackgroundColor => BackgroundColor ?? EmailStyleConfig.ButtonBackgroundColor;
-    private string ResolvedTextColor => TextColor ?? EmailStyleConfig.ButtonTextColor;
-    private string ResolvedSubTextColor => SubTextColor ?? EmailStyleConfig.ButtonSubTextColor;
-    private string ResolvedFontFamily => FontFamily ?? EmailStyleConfig.FontFamily;
-    private string ResolvedFontSize => FontSize ?? EmailStyleConfig.FontSize;
-    private string ResolvedFontWeight => FontWeight ?? EmailStyleConfig.ButtonFontWeight;
-    private string ResolvedBorderColor => BorderColor ?? ResolvedBackgroundColor;
+    private string ResolvedBorderColor => BorderColor ?? BackgroundColor;
 
     /// <summary>
     /// Internal button padding (default: 14px 28px)

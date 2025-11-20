@@ -66,9 +66,9 @@
         }
     </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: @ResolvedBackgroundColor;">
+<body style="margin: 0; padding: 0; background-color: @BackgroundColor;">
     <!-- 100% background wrapper -->
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: @ResolvedBackgroundColor;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: @BackgroundColor;">
         <tr>
             <td align="center" style="padding: 20px 10px;">
                 <!-- Main email container (600px) -->
@@ -78,7 +78,7 @@
                     {
                         <!-- Header Section -->
                         <tr>
-                            <td align="center" style="padding: @HeaderPadding; background-color: @ResolvedHeaderBackgroundColor;">
+                            <td align="center" style="padding: @HeaderPadding; background-color: @HeaderBackgroundColor;">
                                 @if (!string.IsNullOrEmpty(ResolvedLogoUrl))
                                 {
                                     <img src="@ResolvedLogoUrl" alt="@LogoAlt" width="@LogoWidth" height="@LogoHeight" style="display: block; margin: 0 auto; margin-bottom: 30px;" />
@@ -93,7 +93,7 @@
 
                     <!-- Main Content Section -->
                     <tr>
-                        <td style="padding: @ContentPadding; background-color: @ResolvedContentBackgroundColor;">
+                        <td style="padding: @ContentPadding; background-color: @ContentBackgroundColor;">
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
                                     <td>
@@ -108,7 +108,7 @@
                     {
                         <!-- Footer Section -->
                         <tr>
-                            <td align="center" style="padding: @FooterPadding; background-color: @ResolvedFooterBackgroundColor; color: @ResolvedFooterTextColor; font-size: 12px;">
+                            <td align="center" style="padding: @FooterPadding; background-color: @FooterBackgroundColor; color: @FooterTextColor; font-size: 12px;">
                                 @FooterContent
                             </td>
                         </tr>
@@ -126,10 +126,10 @@
     public string Title { get; set; } = "Email";
 
     [Parameter]
-    public string? BackgroundColor { get; set; }
+    public string BackgroundColor { get; set; } = EmailStyleConfig.LayoutBackgroundColor;
 
     [Parameter]
-    public string? ContentBackgroundColor { get; set; }
+    public string ContentBackgroundColor { get; set; } = EmailStyleConfig.ContentBackgroundColor;
 
     [Parameter]
     public string ContentPadding { get; set; } = "40px";
@@ -141,7 +141,7 @@
     public RenderFragment? HeaderContent { get; set; }
 
     [Parameter]
-    public string? HeaderBackgroundColor { get; set; }
+    public string HeaderBackgroundColor { get; set; } = EmailStyleConfig.HeaderBackgroundColor;
 
     [Parameter]
     public string HeaderPadding { get; set; } = "40px";
@@ -153,10 +153,10 @@
     public RenderFragment? FooterContent { get; set; }
 
     [Parameter]
-    public string? FooterBackgroundColor { get; set; }
+    public string FooterBackgroundColor { get; set; } = EmailStyleConfig.FooterBackgroundColor;
 
     [Parameter]
-    public string? FooterTextColor { get; set; }
+    public string FooterTextColor { get; set; } = EmailStyleConfig.FooterTextColor;
 
     [Parameter]
     public string FooterPadding { get; set; } = "20px";
@@ -176,10 +176,5 @@
     [Parameter]
     public string LogoHeight { get; set; } = "50";
 
-    private string ResolvedBackgroundColor => BackgroundColor ?? EmailStyleConfig.LayoutBackgroundColor;
-    private string ResolvedContentBackgroundColor => ContentBackgroundColor ?? EmailStyleConfig.ContentBackgroundColor;
-    private string ResolvedHeaderBackgroundColor => HeaderBackgroundColor ?? EmailStyleConfig.HeaderBackgroundColor;
-    private string ResolvedFooterBackgroundColor => FooterBackgroundColor ?? EmailStyleConfig.FooterBackgroundColor;
-    private string ResolvedFooterTextColor => FooterTextColor ?? EmailStyleConfig.FooterTextColor;
     private string ResolvedLogoUrl => LogoUrl ?? Configuration["Emails:DefaultLogo"]!;
 }
