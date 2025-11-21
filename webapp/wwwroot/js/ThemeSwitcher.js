@@ -10,9 +10,10 @@ window.ThemeSwitcher = {
     },
 
     getCurrentThemeFromCookie: function(){
-        let cookie = document.cookie.split(";").find(row => row.startsWith("theme="));
+        let cookie = document.cookie.split(";").find(row => row.trimStart().startsWith("theme="));
         if(!cookie)
         {
+            console.log("[ThemeSwitcher] No theme found in cookie, fallback to Light");
             this.setTheme(this.Light);
             return this.Light;
         }
