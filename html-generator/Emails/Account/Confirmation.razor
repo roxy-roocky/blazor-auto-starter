@@ -3,13 +3,13 @@
 @using html_generator.Emails.Templates
 
 <SimpleActionEmailTemplate
-    Subject="Lien de confirmation de création de compte"
-    Greeting=@($"{User.FirstName} {User.LastName}")
+    Subject="Account Creation Confirmation Link"
+    Greeting=@_greetings
     CallToActionUrl="@ConfirmationLink"
-    CallToActionText="Cliquez ici pour confirmer mon inscription"
-    FooterText="Vous recevez cet email car vous tentez de créer un compte sur notre plateform."
+    CallToActionText="Click here to confirm my registration"
+    FooterText="You are receiving this email because you are trying to create an account on our platform."
 >
-    <p>Pour confirmer la création de votre compte sur notre plateforme, veuillez cliquez sur le bouton ci-dessous.</p>
+    <p>To confirm the creation of your account on our platform, please click the button below.</p>
 </SimpleActionEmailTemplate>
 
 @code {
@@ -18,4 +18,12 @@
 
     [Parameter, EditorRequired]
     public string ConfirmationLink {get;set;}
+
+    protected virtual string _greetings {
+        get{
+            var gr = $"{User.FirstName} {User.LastName}";
+
+            return string.IsNullOrWhiteSpace(gr) ? User.Email!.Split('@').First() : gr;
+        }
+    }
 }
