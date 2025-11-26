@@ -1,25 +1,27 @@
 ﻿@page "/weather"
 @attribute [StreamRendering]
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Weather> L
 
-<PageTitle>Weather</PageTitle>
+<PageTitle>@L["Weather"]</PageTitle>
 
-<h1>Weather</h1>
+<h1>@L["Weather"]</h1>
 
-<p>This component demonstrates showing data.</p>
+<p>@L["This component demonstrates showing data."]</p>
 
 @if (forecasts == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>@L["Loading..."]</em></p>
 }
 else
 {
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
-                <th aria-label="Temperature in Celsius">Temp. (C)</th>
-                <th aria-label="Temperature in Farenheit">Temp. (F)</th>
-                <th>Summary</th>
+                <th>@L["Date"]</th>
+                <th aria-label="@L["Temperature in Celsius"]">@L["Temp. (C)"]</th>
+                <th aria-label="@L["Temperature in Farenheit"]">@L["Temp. (F)"]</th>
+                <th>@L["Summary"]</th>
             </tr>
         </thead>
         <tbody>
@@ -45,7 +47,7 @@ else
         await Task.Delay(500);
 
         var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+        var summaries = new[] { L["Freezing"], L["Bracing"], L["Chilly"], L["Cool"], L["Mild"], L["Warm"], L["Balmy"], L["Hot"], L["Sweltering"], L["Scorching"] };
         forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
             Date = startDate.AddDays(index),

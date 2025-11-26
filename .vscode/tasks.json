@@ -128,6 +128,24 @@
                 
             },
             "group": "none"
+        },
+        {
+            "label": "🌐 Localizer - Generate RESX",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/localization-generator/localization-generator.csproj",
+                "--",
+                "${workspaceFolder}/webapp.sln"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+
+            },
+            "group": "none"
         }
     ],
     "inputs": [

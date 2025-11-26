@@ -1,6 +1,7 @@
 @page "/debug/emails"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.Localization
 @using main_datacontext
 @using main_datacontext.Emails
 @using webapp.Components.Debug.Shared
@@ -10,49 +11,50 @@
 @rendermode InteractiveServer
 
 @inject MainDbContext DbContext
+@inject IStringLocalizer<EmailList> L
 
-<PageTitle>Liste des Emails</PageTitle>
+<PageTitle>@L["Email List"]</PageTitle>
 
 <div class="container py-4 d-flex flex-column" style="min-height: calc(100vh - 100px);">
-    <h1 class="mb-4">Liste des Emails</h1>
+    <h1 class="mb-4">@L["Email List"]</h1>
 
     <!-- Filtres -->
     <div class="accordion mb-4">
         <div class="accordion-item">
             <h5 class="accordion-header">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#email-list-filter" aria-expanded="true" aria-controls="email-list-filter">
-                    Filtres
+                    @L["Filters"]
                 </button>
             </h5>
             <div id="email-list-filter" class="accordion-collapse collapse">
                 <div class="row m-3 mb-4 g-2">
                     <div class="col-lg-4 col-md-6 mt-3 mt-lg-0">
-                        <label for="filterRecipient" class="form-label">Destinataire</label>
+                        <label for="filterRecipient" class="form-label">@L["Recipient"]</label>
                         <input type="text" class="form-control" id="filterRecipient"
                             @bind="_filterRecipient" @bind:event="oninput"
                             @onkeydown="HandleKeyPress"
-                            placeholder="Rechercher un destinataire...">
+                            placeholder="@L["Search for a recipient..."]">
                     </div>
                     <div class="col-lg-4 col-md-6 mt-3 mt-lg-0">
-                        <label for="filterSubject" class="form-label">Sujet</label>
+                        <label for="filterSubject" class="form-label">@L["Subject"]</label>
                         <input type="text" class="form-control" id="filterSubject"
                             @bind="_filterSubject" @bind:event="oninput"
                             @onkeydown="HandleKeyPress"
-                            placeholder="Rechercher un sujet...">
+                            placeholder="@L["Search for a subject..."]">
                     </div>
                     <div class="col-lg-2 col-md-6 mt-3 mt-lg-0">
-                        <label for="filterUnread" class="form-label">Statut</label>
+                        <label for="filterUnread" class="form-label">@L["Status"]</label>
                         <select class="form-select" id="filterUnread" @bind="_filterUnread" @bind:after="ApplyFilters">
-                            <option value="">Tous</option>
-                            <option value="unread">Non lus</option>
-                            <option value="read">Lus</option>
+                            <option value="">@L["All"]</option>
+                            <option value="unread">@L["Unread"]</option>
+                            <option value="read">@L["Read"]</option>
                         </select>
                     </div>
                     <div class="col-lg-2 col-md-6 mt-3 mt-lg-0 d-flex align-items-end gap-2">
                         <button class="btn btn-primary btn-sm flex-fill" @onclick="ApplyFilters">
-                            <i class="fa-solid fa-filter me-2"></i>Filtrer
+                            <i class="fa-solid fa-filter me-2"></i>@L["Filter"]
                         </button>
-                        <button class="btn btn-outline-secondary btn-sm" @onclick="ClearFilters" title="Effacer les filtres">
+                        <button class="btn btn-outline-secondary btn-sm" @onclick="ClearFilters" title="@L["Clear filters"]">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
@@ -65,14 +67,14 @@
     {
         <div class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Chargement...</span>
+                <span class="visually-hidden">@L["Loading..."]</span>
             </div>
         </div>
     }
     else if (!_emails.Any())
     {
         <div class="alert alert-info">
-            <i class="fa-solid fa-info-circle me-2"></i>Aucun email trouvé dans la base de données.
+            <i class="fa-solid fa-info-circle me-2"></i>@L["No emails found in the database."]
         </div>
     }
     else
@@ -81,11 +83,11 @@
             <table class="table table-hover align-middle">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Expéditeur</th>
-                        <th>Destinataires</th>
-                        <th>Sujet</th>
-                        <th>Statut</th>
+                        <th>@L["Date"]</th>
+                        <th>@L["Sender"]</th>
+                        <th>@L["Recipients"]</th>
+                        <th>@L["Subject"]</th>
+                        <th>@L["Status"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -114,11 +116,11 @@
                             <td>
                                 @if (!email.Read)
                                 {
-                                    <span class="badge bg-primary">Non lu</span>
+                                    <span class="badge bg-primary">@L["Unread"]</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-secondary">Lu</span>
+                                    <span class="badge bg-secondary">@L["Read"]</span>
                                 }
                             </td>
                         </tr>
@@ -128,11 +130,11 @@
         </div>
 
         <!-- Pagination -->
-        <nav aria-label="Pagination des emails" class="mt-2">
+        <nav aria-label="@L["Email pagination"]" class="mt-2">
             <ul class="pagination justify-content-center">
                 <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
                     <button class="page-link" @onclick="() => GoToPage(_currentPage - 1)" disabled="@(_currentPage == 1)">
-                        Précédent
+                        @L["Previous"]
                     </button>
                 </li>
 
@@ -148,14 +150,14 @@
 
                 <li class="page-item @(_currentPage == _totalPages ? "disabled" : "")">
                     <button class="page-link" @onclick="() => GoToPage(_currentPage + 1)" disabled="@(_currentPage == _totalPages)">
-                        Suivant
+                        @L["Next"]
                     </button>
                 </li>
             </ul>
         </nav>
 
         <div class="text-center text-muted">
-            Page @_currentPage sur @_totalPages (@_totalCount emails au total)
+            @L["Page"] @_currentPage @L["of"] @_totalPages (@_totalCount @L["emails total"])
         </div>
     }
 </div>
@@ -174,7 +176,7 @@
                     @if (_selectedEmail != null)
                     {
                         <div class="mb-3">
-                            <strong>De: </strong>
+                            <strong>@L["From:"]: </strong>
                             @if (!string.IsNullOrEmpty(_selectedEmail.SenderName))
                             {
                                 <text>@_selectedEmail.SenderName &lt;@_selectedEmail.SenderEmail&gt;</text>
@@ -185,22 +187,22 @@
                             }
                         </div>
                         <div class="mb-3">
-                            <strong>À:</strong> @_selectedEmail.To
+                            <strong>@L["To:"]</strong> @_selectedEmail.To
                         </div>
                         @if (!string.IsNullOrEmpty(_selectedEmail.Cc))
                         {
                             <div class="mb-3">
-                                <strong>CC:</strong> @_selectedEmail.Cc
+                                <strong>@L["CC:"]</strong> @_selectedEmail.Cc
                             </div>
                         }
                         @if (!string.IsNullOrEmpty(_selectedEmail.Bcc))
                         {
                             <div class="mb-3">
-                                <strong>BCC:</strong> @_selectedEmail.Bcc
+                                <strong>@L["BCC:"]</strong> @_selectedEmail.Bcc
                             </div>
                         }
                         <div class="mb-3">
-                            <strong>Date:</strong> @_selectedEmail.SentDate.ToString("dd/MM/yyyy HH:mm:ss")
+                            <strong>@L["Date:"]</strong> @_selectedEmail.SentDate.ToString("dd/MM/yyyy HH:mm:ss")
                         </div>
                         <hr />
                         @if (!string.IsNullOrEmpty(_selectedEmail.HtmlContent))
@@ -210,13 +212,13 @@
                         else
                         {
                             <div class="alert alert-warning">
-                                <i class="fa-solid fa-exclamation-triangle me-2"></i>Aucun contenu HTML disponible pour cet email.
+                                <i class="fa-solid fa-exclamation-triangle me-2"></i>@L["No HTML content available for this email."]
                             </div>
                         }
                     }
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="ClosePopup">Fermer</button>
+                    <button type="button" class="btn btn-secondary" @onclick="ClosePopup">@L["Close"]</button>
                 </div>
             </div>
         </div>

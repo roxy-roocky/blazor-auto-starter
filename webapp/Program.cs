@@ -41,6 +41,30 @@ builder.Services.AddIdentityCore<main_datacontext.Identity.User>(options => opti
 builder.Services.AddScoped<IEmailSender<main_datacontext.Identity.User>, webapp.Managers.Account.EmailManager>();
 
 builder.Services.AddScoped<webapp.Managers.ThemeManager>();
+builder.Services.AddScoped<webapp.Client.Managers.CultureManager>();
+
+// Localization
+builder.Services.AddSingleton<Microsoft.Extensions.Localization.IStringLocalizerFactory, localization.Services.SharedStringLocalizerFactory>();
+builder.Services.AddLocalization();
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = localization.Configuration.LocalizationConfig.GetCultureCodes();
+    options.SetDefaultCulture(localization.Configuration.LocalizationConfig.DefaultCulture)
+        .AddSupportedCultures(supportedCultures)
+        .AddSupportedUICultures(supportedCultures);
+
+    // Use cookie to determine culture
+    options.RequestCultureProviders.Insert(0, new Microsoft.AspNetCore.Localization.CustomRequestCultureProvider(context =>
+    {
+        var cultureCookie = context.Request.Cookies["culture"];
+        if (!string.IsNullOrEmpty(cultureCookie) && localization.Configuration.LocalizationConfig.IsSupported(cultureCookie))
+        {
+            return Task.FromResult<Microsoft.AspNetCore.Localization.ProviderCultureResult?>(
+                new Microsoft.AspNetCore.Localization.ProviderCultureResult(cultureCookie));
+        }
+        return Task.FromResult<Microsoft.AspNetCore.Localization.ProviderCultureResult?>(null);
+    }));
+});
 
 // Ajout des services
 
@@ -73,6 +97,7 @@ else
 
 // app.UseHttpsRedirection();
 
+app.UseRequestLocalization();
 
 app.UseAntiforgery();
 

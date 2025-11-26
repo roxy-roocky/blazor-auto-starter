@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Associate your {0} account." xml:space="preserve">
+    <value>Associer votre compte {0}.</value>
+  </data>
+  <data name="Can't create an instance of '{0}'. Ensure that '{0}' is not an abstract class and has a parameterless constructor" xml:space="preserve">
+    <value>Impossible de créer une instance de '{0}'. Assurez-vous que '{0}'  n'est pas une classe abstraite et possède un contructeur sans paramètre.</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>E-mail</value>
+  </data>
+  <data name="Error from external provider: {0}" xml:space="preserve">
+    <value>Erreur provenant d'un fournisseur externe: {0}</value>
+  </data>
+  <data name="Error loading external login information during confirmation." xml:space="preserve">
+    <value>Erreur lors du chargement des données de connexion externes durant la confirmation.</value>
+  </data>
+  <data name="Error loading external login information." xml:space="preserve">
+    <value>Erreur lors du chargement des données de connexion.</value>
+  </data>
+  <data name="Error: {0}" xml:space="preserve">
+    <value>Erreur: {0}</value>
+  </data>
+  <data name="Please enter an email address for this site below and click the Register button to finish logging in." xml:space="preserve">
+    <value>Merci de rentrer une adresse email à utiliser sur le site ci-dessous, puis cliquer sur le bouton "S'enregister" pour vous connecter.</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>S'enregister</value>
+  </data>
+  <data name="The default UI requires a user store with email support." xml:space="preserve">
+    <value>L'interface par défaut requiert un stockage d'utilisateur qui supporte les emails.</value>
+  </data>
+  <data name="You've successfully authenticated with" xml:space="preserve">
+    <value>Vous êtes authentifié avec success</value>
+  </data>
+</root>

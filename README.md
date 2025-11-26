@@ -23,6 +23,8 @@ Template de démarrage moderne pour application web Blazor .NET 9 avec mode de r
 - [Configuration](#configuration)
   - [Fichiers appsettings](#fichiers-appsettings)
   - [Thèmes](#thèmes)
+  - [Localisation](#localisation)
+  - [Icônes et favicons](#icônes-et-favicons)
   - [Emails](#emails)
 - [Développement](#développement)
   - [Extensions VSCode recommandées](#extensions-vscode-recommandées)
@@ -34,6 +36,7 @@ Template de démarrage moderne pour application web Blazor .NET 9 avec mode de r
 
 - 🔐 **Authentification complète** - Système d'identité ASP.NET Core avec gestion des utilisateurs
 - 🎨 **Thèmes personnalisables** - Basculement dynamique entre thème clair et sombre avec persistance par cookies
+- 🌍 **Système de localisation** - Support multilingue avec générateur automatique de ressources .resx et sélecteur de langue
 - ⚡ **Rendu hybride** - Mode Auto combinant rendu serveur (InteractiveServer) et WebAssembly (InteractiveWebAssembly)
 - 💾 **Base de données SQLite** - Entity Framework Core avec migrations pour la gestion des données
 - 📧 **Système d'envoi d'emails** - Templates d'emails personnalisables avec composants Blazor et intégration Brevo API
@@ -133,7 +136,7 @@ Les fichiers `.js` et `.css` sont surveillés automatiquement grâce à la confi
 
 ### 📁 Solution principale (`webapp.sln`)
 
-Le projet est organisé en cinq projets distincts :
+Le projet est organisé en sept projets distincts :
 
 #### **webapp** - Application serveur principale
 - **Components/** - Composants Razor partagés
@@ -144,16 +147,19 @@ Le projet est organisé en cinq projets distincts :
 - **Managers/** - Services et gestionnaires
   - **Account/** - Gestionnaires de compte (EmailManager pour les emails transactionnels)
 - **wwwroot/** - Ressources statiques
-  - **js/** - Scripts JavaScript (ThemeSwitcher.js)
+  - **js/** - Scripts JavaScript (ThemeSwitcher.js, CultureSwitcher.js)
   - **bootstrap/** - Fichiers Bootstrap compilés
   - **fontawesome/** - Styles et webfonts Font Awesome
   - **logo.svg/png** - Logo de l'application
+  - **favicon.*** - Favicons et icônes pour différentes plateformes (16x16, 32x32, Android, Apple)
 - **Styles/** - Fichiers sources SASS
 - **Program.cs** - Point d'entrée et configuration des services
 
 #### **webapp.Client** - Application WebAssembly
 - **Components/** - Composants côté client
+  - **Layout/** - Composants de mise en page (LanguageSwitcher)
 - **Managers/** - Gestionnaires côté client
+  - **CultureManager.cs** - Gestion de la culture et du changement de langue
 - **Pages/** - Pages rendues côté client
 - **wwwroot/** - Ressources statiques spécifiques au client
 - **Program.cs** - Configuration WebAssembly
@@ -179,6 +185,17 @@ Le projet est organisé en cinq projets distincts :
   - **IEmailSender** - Interface d'envoi d'emails
   - **DbEmailSender** - Stockage des emails en base de données (développement)
   - **BrevoEmailSender** - Envoi via API Brevo (production)
+
+#### **localization** - Système de localisation
+- **Configuration/LocalizationConfig.cs** - Configuration centralisée des cultures supportées
+- **Services/SharedStringLocalizerFactory.cs** - Factory personnalisée pour IStringLocalizer
+- **Resources/** - Fichiers de ressources .resx générés automatiquement
+
+#### **localization-generator** - Générateur de ressources
+- **Program.cs** - Outil CLI pour scanner le code et générer les fichiers .resx
+- Analyse automatique des fichiers C# et Razor
+- Extraction des clés IStringLocalizer et Data Annotations
+- Gestion intelligente des ressources obsolètes
 
 ### 🔄 Flux de compilation
 
@@ -246,6 +263,73 @@ Le système de thèmes est géré **côté client** via le [ThemeManager](webapp
 - Les attributs `data-bs-theme` de Bootstrap pour le basculement clair/sombre
 - La persistance des préférences utilisateur via cookies
 - Le script [ThemeSwitcher.js](webapp/wwwroot/js/ThemeSwitcher.js) pour l'interaction JavaScript
+
+### Localisation
+
+Le projet intègre un système complet de localisation multilingue :
+
+**Configuration :**
+- **Cultures supportées** - Définies dans [LocalizationConfig.cs](localization/Configuration/LocalizationConfig.cs) (anglais et français par défaut)
+- **Culture par défaut** - Anglais (configurable)
+- **Détection automatique** - Utilise la langue du navigateur si disponible, sinon la culture par défaut
+- **Persistance** - Les préférences utilisateur sont stockées dans des cookies
+
+**Composants :**
+- **LanguageSwitcher** - Composant de sélection de langue avec drapeaux et noms de langues ([LanguageSwitcher.razor](webapp.Client/Components/Layout/LanguageSwitcher.razor))
+- **CultureManager** - Gestionnaire côté client pour le changement de culture ([CultureManager.cs](webapp.Client/Managers/CultureManager.cs))
+- **CultureSwitcher.js** - Script JavaScript pour la gestion des cookies de culture ([CultureSwitcher.js](webapp/wwwroot/js/CultureSwitcher.js))
+
+**Générateur de ressources :**
+Le projet inclut un outil CLI [localization-generator](localization-generator/) qui :
+- Scanne automatiquement tous les projets pour trouver les clés de traduction
+- Extrait les utilisations de `IStringLocalizer["Key"]` dans les fichiers C# et Razor
+- Extrait les messages d'erreur des Data Annotations (`[Required(ErrorMessage = "...")]`)
+- Génère des fichiers `.resx` pour chaque langue dans `localization/Resources/`
+- Conserve les traductions existantes lors de la régénération
+- Déplace automatiquement les fichiers obsolètes dans un dossier `Obsolete/`
+
+**Utilisation dans le code :**
+```csharp
+// Dans un fichier Razor
+@inject IStringLocalizer<LocalizationExample> L
+<h1>@L["PageTitle"]</h1>
+<p>@L["WelcomeMessage", userName]</p>
+
+// Dans une classe C#
+private readonly IStringLocalizer<MyClass> _localizer;
+var message = _localizer["Key"];
+```
+
+**Commandes :**
+```bash
+# Générer les fichiers de ressources pour toutes les langues configurées
+cd localization-generator
+dotnet run ../webapp.sln
+
+# Générer pour des langues spécifiques
+dotnet run fr,en,es ../webapp.sln
+```
+
+Exemple de page : [LocalizationExample.razor](webapp/Components/Pages/LocalizationExample.razor)
+
+### Icônes et favicons
+
+Le projet inclut un ensemble complet d'icônes et de favicons pour différentes plateformes :
+
+**Fichiers disponibles :**
+- **logo.svg/png** - Logo principal de l'application (Blazor Auto Starter avec icône stylisée)
+- **favicon.svg/png** - Favicon moderne pour les navigateurs récents
+- **favicon-16x16.png, favicon-32x32.png** - Favicons en différentes tailles
+- **apple-touch-icon.png** - Icône pour iOS (180x180)
+- **android-chrome-192x192.png, android-chrome-512x512.png** - Icônes pour Android PWA
+- **site.webmanifest** - Manifest web pour les Progressive Web Apps
+
+Le logo utilise un design moderne avec :
+- Un cercle avec dégradé brun (couleurs Blazor)
+- Une lettre "B" stylisée en blanc
+- Un accent de fusée avec dégradé orange/jaune symbolisant la performance
+
+Tous les fichiers sont dans [webapp/wwwroot/](webapp/wwwroot/).
 
 ### Emails
 

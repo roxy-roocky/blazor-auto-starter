@@ -8,12 +8,17 @@ This file contains instructions and context for AI coding assistants to work eff
 **Architecture**: Hybrid Auto render mode (Server-Side + WebAssembly)
 **Database**: SQLite with Entity Framework Core
 **Frontend**: Bootstrap 5, Font Awesome, SASS
+**Features**: Authentication, Themes, Localization, Email system
 
-### 3-Project Structure
+### 7-Project Structure
 
 1. **webapp** - Main server application (Blazor Server + WebAssembly hosting)
 2. **webapp.Client** - Client-side WebAssembly application
 3. **main-datacontext** - Shared data layer (EF Core, Identity)
+4. **html-generator** - Email template rendering with Blazor components
+5. **jobcode** - Business services (email senders, etc.)
+6. **localization** - Localization system with resource management
+7. **localization-generator** - CLI tool to generate .resx files from code
 
 ## Initial Setup
 
@@ -96,20 +101,54 @@ npx sass -q Styles/:wwwroot/ --watch
 webapp/
 ├── Components/
 │   ├── Account/      # Authentication and account management
-│   ├── Layout/       # Layout components
-│   └── Pages/        # Server pages
-├── Managers/         # Server services (e.g., ThemeManager)
+│   ├── Debug/        # Debug tools (EmailList, EmailTemplates)
+│   ├── Layout/       # Layout components (NavBar, MainLayout)
+│   └── Pages/        # Server pages (Home, Weather, etc.)
+├── Managers/
+│   ├── Account/      # Account services (EmailManager)
+│   └── ThemeManager.cs
 ├── Styles/           # SASS sources (not published)
-└── wwwroot/          # Compiled public assets
+└── wwwroot/
+    ├── js/           # JavaScript interop (ThemeSwitcher.js, CultureSwitcher.js)
+    ├── bootstrap/    # Bootstrap compiled files
+    ├── fontawesome/  # Font Awesome assets
+    ├── logo.svg/png  # Application logo
+    └── favicon.*     # Favicons and icons for all platforms
 
 webapp.Client/
-├── Components/       # WebAssembly components
-├── Managers/         # Client services (ThemeManager)
-└── Pages/            # Client pages (Counter, etc.)
+├── Components/
+│   └── Layout/       # LanguageSwitcher component
+├── Managers/
+│   ├── ThemeManager.cs    # Client-side theme management
+│   └── CultureManager.cs  # Client-side culture management
+└── Pages/            # Client pages (Counter, Auth, etc.)
 
 main-datacontext/
 ├── Identity/         # User models
+├── Emails/           # Email data models
 └── MainDbContext.cs  # EF Core context
+
+html-generator/
+├── Emails/
+│   ├── Account/      # Account email templates (Confirmation, PasswordReset)
+│   ├── Templates/    # Reusable templates (SimpleActionEmailTemplate)
+│   └── Shared/       # Shared components (EmailLayout, TextBlock, ButtonBlock)
+├── HtmlRendererService.cs  # Blazor to HTML renderer
+└── EmailStyleConfig.cs     # Centralized email styling
+
+jobcode/
+└── Managers/
+    └── Emails/       # IEmailSender, DbEmailSender, BrevoEmailSender
+
+localization/
+├── Configuration/
+│   └── LocalizationConfig.cs  # Supported cultures configuration
+├── Services/
+│   └── SharedStringLocalizerFactory.cs  # Custom IStringLocalizer factory
+└── Resources/        # .resx files (auto-generated)
+
+localization-generator/
+└── Program.cs        # CLI tool to scan code and generate .resx files
 ```
 
 ### Naming Conventions
@@ -125,6 +164,69 @@ Theme system is managed **client-side**:
 - **JS Interop**: `webapp/wwwroot/js/ThemeSwitcher.js`
 - **Persistence**: Cookies via JavaScript
 - **Bootstrap Attribute**: `data-bs-theme="light|dark"`
+
+### Localization System
+
+Multi-language support with automatic resource generation:
+- **Configuration**: `localization/Configuration/LocalizationConfig.cs`
+  - Define supported cultures (default: English, French)
+  - Culture codes, display names, and flag emojis
+- **Client Manager**: `webapp.Client/Managers/CultureManager.cs`
+  - Detects browser language automatically
+  - Persists user preference in cookies
+- **JS Interop**: `webapp/wwwroot/js/CultureSwitcher.js`
+- **UI Component**: `webapp.Client/Components/Layout/LanguageSwitcher.razor`
+
+**Using localization in code**:
+```csharp
+// Inject IStringLocalizer
+@inject IStringLocalizer<MyComponent> L
+
+// Use translations
+<h1>@L["PageTitle"]</h1>
+<p>@L["WelcomeMessage", userName]</p>
+```
+
+**Generating resources**:
+```bash
+cd localization-generator
+dotnet run ../webapp.sln  # Uses configured languages
+dotnet run fr,en,es ../webapp.sln  # Custom languages
+```
+
+The generator:
+- Scans all projects for `IStringLocalizer["Key"]` usage
+- Extracts Data Annotations error messages
+- Generates `.resx` files in `localization/Resources/`
+- Preserves existing translations
+- Moves obsolete files to `Obsolete/` folder
+
+### Email System
+
+Complete transactional email system with Blazor templates:
+- **Templates**: Built with Blazor components in `html-generator/Emails/`
+  - Rendered to HTML via `HtmlRendererService`
+  - Reusable components: `EmailLayout`, `TextBlock`, `ButtonBlock`
+  - Centralized styling in `EmailStyleConfig.cs`
+- **Senders**: Two implementations (via `IEmailSender`)
+  - `DbEmailSender`: Stores emails in DB for development
+  - `BrevoEmailSender`: Sends via Brevo API for production
+- **Debug Tools**:
+  - `/Debug/EmailList`: View stored emails
+  - `/Debug/EmailTemplates`: Preview all templates
+
+**Using email system**:
+```csharp
+// Inject IEmailSender
+private readonly IEmailSender _emailSender;
+
+// Send email
+await _emailSender.SendEmailAsync(
+    toEmail: "user@example.com",
+    subject: "Subject",
+    htmlMessage: htmlContent
+);
+```
 
 ## Code Standards
 
@@ -158,6 +260,7 @@ Theme system is managed **client-side**:
 - `wwwroot/appsettings.json` (client)
 - `.db` files (SQLite database)
 - `Data/` folder (contains DB)
+- Brevo API keys
 
 These files are already in `.gitignore`.
 
@@ -165,8 +268,11 @@ These files are already in `.gitignore`.
 
 - ASP.NET Core Identity configured and ready
 - User model: `main_datacontext.Identity.User`
-- Email sender: `IdentityNoOpEmailSender` (replace in production)
-- Account confirmation required by default
+- Email sender: Uses `IEmailSender` interface
+  - Development: Emails stored in database
+  - Production: Sent via Brevo API (requires API key in `appsettings.json`)
+- Account confirmation emails use Blazor templates
+- Password reset with styled email templates
 
 ## Git Workflow
 
@@ -233,10 +339,19 @@ public User CurrentUser { get; set; } // Bad if can be null
 
 ### Important Points
 
-1. **Replace** `IdentityNoOpEmailSender` with real email service
-2. **Configure** real database (PostgreSQL/SQL Server recommended)
+1. **Configure Brevo API** - Add your Brevo API key to `appsettings.json`
+   ```json
+   {
+     "Brevo": {
+       "ApiKey": "your-api-key-here"
+     }
+   }
+   ```
+2. **Configure** real database (PostgreSQL/SQL Server recommended for production)
 3. **Enable** HTTPS in production (already configured in `Program.cs`)
 4. **Check** User Secrets for sensitive data
+5. **Generate localization files** - Run `localization-generator` before deployment
+6. **Compile SASS** - Ensure all SASS files are compiled to CSS
 
 ### Production Build
 
@@ -257,6 +372,29 @@ The `publish/` folder will contain the ready-to-deploy application.
 
 - This project is a **template/starter**, designed to be cloned and modified
 - Prioritize **simplicity** and **code clarity**
-- Examples (Counter, Weather) are there to **illustrate** both render modes
+- Examples (Counter, Weather, LocalizationExample) illustrate different features
 - Always **test** EF migrations before applying them
 - When unsure about render mode, ask user about their use case
+
+### Key Features to Remember
+
+1. **Localization**: Always use `IStringLocalizer<T>` for user-facing strings
+   - Run `localization-generator` after adding new translatable strings
+   - Update `LocalizationConfig.cs` to add new languages
+
+2. **Email Templates**: Use Blazor components in `html-generator/Emails/`
+   - Follow existing patterns (EmailLayout, TextBlock, ButtonBlock)
+   - Test templates via `/Debug/EmailTemplates` page
+   - Emails are stored in DB during development
+
+3. **Theme System**: Client-side management via cookies
+   - Use Bootstrap's `data-bs-theme` attribute
+   - Don't create custom theme-switching logic
+
+4. **Icons & Branding**: Logo and favicons are in `wwwroot/`
+   - `logo.svg/png` for application branding
+   - Multiple favicon formats for cross-platform support
+
+5. **Debug Tools**: Available to authenticated users
+   - `/Debug/EmailList` - View development emails
+   - `/Debug/EmailTemplates` - Preview email templates

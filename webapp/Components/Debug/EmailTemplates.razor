@@ -1,5 +1,6 @@
 @page "/debug/email-templates"
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
 @using html_generator.Emails.Account
 @using webapp.Components.Debug.Shared
 
@@ -7,18 +8,20 @@
 @attribute [StreamRendering]
 @rendermode InteractiveServer
 
-<PageTitle>Aperçu des Templates Email</PageTitle>
+@inject IStringLocalizer<EmailTemplates> L
+
+<PageTitle>@L["Email Templates Preview"]</PageTitle>
 
 <div class="container py-4">
-    <h1 class="mb-4">Aperçu des Templates Email</h1>
-    <p class="text-muted mb-4">Cette page affiche un exemple de chaque template d'email disponible avec des données de test.</p>
+    <h1 class="mb-4">@L["Email Templates Preview"]</h1>
+    <p class="text-muted mb-4">@L["This page displays an example of each available email template with test data."]</p>
 
     <!-- Confirmation -->
     <div class="card mb-4">
         <div class="card-header">
             <h5 class="mb-0">
                 <i class="fa-solid fa-envelope-circle-check me-2"></i>
-                Confirmation de compte
+                @L["Account confirmation"]
             </h5>
             <small class="text-muted">html-generator/Emails/Account/Confirmation.razor</small>
         </div>
@@ -34,7 +37,7 @@
         <div class="card-header">
             <h5 class="mb-0">
                 <i class="fa-solid fa-key me-2"></i>
-                Réinitialisation de mot de passe (Code)
+                @L["Password reset (Code)"]
             </h5>
             <small class="text-muted">html-generator/Emails/Account/PasswordReset.razor</small>
         </div>
@@ -50,7 +53,7 @@
         <div class="card-header">
             <h5 class="mb-0">
                 <i class="fa-solid fa-link me-2"></i>
-                Réinitialisation de mot de passe (Lien)
+                @L["Password reset (Link)"]
             </h5>
             <small class="text-muted">html-generator/Emails/Account/PasswordResetLink.razor</small>
         </div>
