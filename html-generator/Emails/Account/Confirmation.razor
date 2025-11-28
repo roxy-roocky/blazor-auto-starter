@@ -1,15 +1,18 @@
 ﻿
 @using html_generator.Emails.Shared
 @using html_generator.Emails.Templates
+@using Microsoft.Extensions.Localization
+
+@inject IStringLocalizer<Confirmation> L
 
 <SimpleActionEmailTemplate
-    Subject="Account Creation Confirmation Link"
+    Subject="@L["Account Creation Confirmation Link"]"
     Greeting=@_greetings
     CallToActionUrl="@ConfirmationLink"
-    CallToActionText="Click here to confirm my registration"
-    FooterText="You are receiving this email because you are trying to create an account on our platform."
+    CallToActionText="@L["Click here to confirm my registration"]"
+    FooterText="@L["You are receiving this email because you are trying to create an account on our platform."]"
 >
-    <p>To confirm the creation of your account on our platform, please click the button below.</p>
+    <p>@L["To confirm the creation of your account on our platform, please click the button below."]</p>
 </SimpleActionEmailTemplate>
 
 @code {

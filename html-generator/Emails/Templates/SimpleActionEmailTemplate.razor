@@ -1,7 +1,10 @@
 @using html_generator.Emails.Shared
 @using utilities
+@using Microsoft.Extensions.Localization
 @* Example email template using the new highly compatible components *@
 @* This demonstrates how to use EmailLayout, TextBlock, and ButtonBlock *@
+
+@inject IStringLocalizer<SimpleActionEmailTemplate> L
 
 <EmailLayout Title="@Subject"
              ShowHeader="true"
@@ -48,11 +51,11 @@
                 <td style="font-family: Arial, sans-serif; font-size: 12px; color: #ffffff; text-align: center; line-height: 1.4;">
                     @if (!string.IsNullOrEmpty(FooterText))
                     {
-                        @((MarkupString)FooterText.Replace("\n", "<br/>"))
+                        @((MarkupString)FooterText.Replace("\\n", "<br/>").Replace("\n", "<br/>").Replace("\r", ""))
                     }
                     else
                     {
-                        <text>Blazor Auto Starter - &copy; @DateTime.Now.Year - All rights reserved</text>
+                        @((MarkupString)L["Blazor Auto Starter - © {0} - All rights reserved", DateTime.Now.Year].ToString())
                     }
                 </td>
             </tr>
@@ -79,4 +82,17 @@
 
     [Parameter]
     public string? FooterText { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Use localized values if default values are still set
+        if (Subject == "Email Subject")
+        {
+            Subject = L["Email Subject"];
+        }
+        if (CallToActionText == "Click Here")
+        {
+            CallToActionText = L["Click Here"];
+        }
+    }
 }
