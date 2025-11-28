@@ -6,6 +6,11 @@
     display: none;
 }
 
+.loading-data{
+    pointer-events: none;
+    opacity: 0.25;
+}
+
 // Styles pour les emails non lus - adaptatifs au thème
 .email-unread {
     font-weight: 600;

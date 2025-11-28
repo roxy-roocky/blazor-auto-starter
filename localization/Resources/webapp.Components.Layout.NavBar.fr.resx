@@ -18,8 +18,8 @@
   <data name="Debug" xml:space="preserve">
     <value>Débogage</value>
   </data>
-  <data name="Email list" xml:space="preserve">
-    <value>Liste des emails</value>
+  <data name="Email inbox" xml:space="preserve">
+    <value>Email inbox</value>
   </data>
   <data name="Email templates" xml:space="preserve">
     <value>Modèles d'emails</value>

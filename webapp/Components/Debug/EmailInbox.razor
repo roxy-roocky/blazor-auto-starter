@@ -1,4 +1,4 @@
-@page "/debug/emails"
+@page "/debug/inbox"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.Extensions.Localization
@@ -11,12 +11,12 @@
 @rendermode InteractiveServer
 
 @inject MainDbContext DbContext
-@inject IStringLocalizer<EmailList> L
+@inject IStringLocalizer<EmailInbox> L
 
-<PageTitle>@L["Email List"]</PageTitle>
+<PageTitle>@L["Email inbox"]</PageTitle>
 
 <div class="container py-4 d-flex flex-column" style="min-height: calc(100vh - 100px);">
-    <h1 class="mb-4">@L["Email List"]</h1>
+    <h1 class="mb-4">@L["Email inbox"]</h1>
 
     <!-- Filtres -->
     <div class="accordion mb-4">
@@ -63,103 +63,92 @@
         </div>
     </div>
 
-    @if (_emails == null)
-    {
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">@L["Loading..."]</span>
+    <div class="@(_loadingTable ? "loading-data" : "")">
+        @if (_emails == null)
+        {
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">@L["Loading..."]</span>
+                </div>
             </div>
-        </div>
-    }
-    else if (!_emails.Any())
-    {
-        <div class="alert alert-info">
-            <i class="fa-solid fa-info-circle me-2"></i>@L["No emails found in the database."]
-        </div>
-    }
-    else
-    {
-        <div class="table-responsive flex-grow-1">
-            <table class="table table-hover align-middle">
-                <thead>
-                    <tr>
-                        <th>@L["Date"]</th>
-                        <th>@L["Sender"]</th>
-                        <th>@L["Recipients"]</th>
-                        <th>@L["Subject"]</th>
-                        <th>@L["Status"]</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var email in _emails)
-                    {
-                        <tr @onclick="async () => await ShowEmailPopup(email)"
-                            style="cursor: pointer;"
-                            class="@(email.Read ? "" : "email-unread")">
-                            <td>@email.SentDate.ToString("dd/MM/yyyy HH:mm")</td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(email.SenderName))
-                                {
-                                    <text>@email.SenderName</text>
-                                    <br />
-                                    <small class="text-muted">@email.SenderEmail</small>
-                                }
-                                else
-                                {
-                                    <text>@email.SenderEmail</text>
-                                }
-                            </td>
-                            <td>
-                                <small>@email.To</small>
-                            </td>
-                            <td>@email.Subject</td>
-                            <td>
-                                @if (!email.Read)
-                                {
-                                    <span class="badge bg-primary">@L["Unread"]</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">@L["Read"]</span>
-                                }
-                            </td>
+        }
+        else if (!_emails.Any())
+        {
+            <div class="alert alert-info">
+                <i class="fa-solid fa-info-circle me-2"></i>@L["No emails found in the database."]
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive flex-grow-1">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>@L["Date"]</th>
+                            <th>@L["Recipients"]</th>
+                            <th>@L["Subject"]</th>
+                            <th>@L["Status"]</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach (var email in _emails)
+                        {
+                            <tr @onclick="async () => await ShowEmailPopup(email)"
+                                style="cursor: pointer;"
+                                class="@(email.Read ? "" : "email-unread")">
+                                <td>@email.SentDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <small>@email.To</small>
+                                </td>
+                                <td>@email.Subject</td>
+                                <td>
+                                    @if (!email.Read)
+                                    {
+                                        <span class="badge bg-primary">@L["Unread"]</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@L["Read"]</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
 
-        <!-- Pagination -->
-        <nav aria-label="@L["Email pagination"]" class="mt-2">
-            <ul class="pagination justify-content-center">
-                <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
-                    <button class="page-link" @onclick="() => GoToPage(_currentPage - 1)" disabled="@(_currentPage == 1)">
-                        @L["Previous"]
-                    </button>
-                </li>
-
-                @for (int i = Math.Max(1, _currentPage - 2); i <= Math.Min(_totalPages, _currentPage + 2); i++)
-                {
-                    var pageNumber = i;
-                    <li class="page-item @(pageNumber == _currentPage ? "active" : "")">
-                        <button class="page-link" @onclick="() => GoToPage(pageNumber)">
-                            @pageNumber
+            <!-- Pagination -->
+            <nav aria-label="@L["Email pagination"]" class="mt-2">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => GoToPage(_currentPage - 1)" disabled="@(_currentPage == 1)">
+                            @L["Previous"]
                         </button>
                     </li>
-                }
 
-                <li class="page-item @(_currentPage == _totalPages ? "disabled" : "")">
-                    <button class="page-link" @onclick="() => GoToPage(_currentPage + 1)" disabled="@(_currentPage == _totalPages)">
-                        @L["Next"]
-                    </button>
-                </li>
-            </ul>
-        </nav>
+                    @for (int i = Math.Max(1, _currentPage - 2); i <= Math.Min(_totalPages, _currentPage + 2); i++)
+                    {
+                        var pageNumber = i;
+                        <li class="page-item @(pageNumber == _currentPage ? "active" : "")">
+                            <button class="page-link" @onclick="() => GoToPage(pageNumber)">
+                                @pageNumber
+                            </button>
+                        </li>
+                    }
 
-        <div class="text-center text-muted">
-            @L["Page"] @_currentPage @L["of"] @_totalPages (@_totalCount @L["emails total"])
-        </div>
-    }
+                    <li class="page-item @(_currentPage == _totalPages ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => GoToPage(_currentPage + 1)" disabled="@(_currentPage == _totalPages)">
+                            @L["Next"]
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="text-center text-muted">
+                @L["Page"] @_currentPage @L["of"] @_totalPages (@_totalCount @L["emails total"])
+            </div>
+        }
+    </div>
 </div>
 
 <!-- Modal pour afficher l'email -->
@@ -226,6 +215,7 @@
 }
 
 @code {
+    private bool _loadingTable = false;
     private List<DbEmail>? _emails;
     private DbEmail? _selectedEmail;
     private bool _isClosing = false;
@@ -240,13 +230,19 @@
     private string _filterSubject = "";
     private string _filterUnread = "";
 
-    protected override async Task OnInitializedAsync()
+    protected async override Task OnAfterRenderAsync(bool firstRender)
     {
-        await LoadEmails();
+        if(firstRender)
+        {
+            await LoadEmails();
+        }
     }
 
     private async Task LoadEmails()
     {
+        _loadingTable = true;
+        StateHasChanged();
+
         var query = DbContext.DatabaseEmails.AsQueryable();
 
         // Appliquer les filtres
@@ -277,6 +273,9 @@
             .Skip((_currentPage - 1) * _pageSize)
             .Take(_pageSize)
             .ToListAsync();
+
+        _loadingTable = false;
+        StateHasChanged();
     }
 
     private async Task ApplyFilters()
