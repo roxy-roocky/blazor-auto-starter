@@ -319,7 +319,9 @@ public class LocalizationExtractor
 
             // Scanne aussi les fichiers .razor (non inclus dans la compilation Roslyn)
             var projectDir = Path.GetDirectoryName(project.FilePath)!;
-            ExtractFromRazorFiles(projectDir, project.Name, results);
+            // Utilise le nom de l'assembly de compilation au lieu du nom du projet pour éviter les problèmes avec les tirets
+            var assemblyName = compilation.AssemblyName ?? project.Name;
+            ExtractFromRazorFiles(projectDir, assemblyName, results);
         }
 
         return results;
@@ -390,6 +392,8 @@ public class LocalizationExtractor
             var namespaceParts = relativeDir.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
                 .Where(p => !string.IsNullOrEmpty(p));
             var fullNamespace = string.Join(".", new[] { projectName }.Concat(namespaceParts).Append(typeName));
+            // Normalise le namespace pour remplacer les tirets par des underscores
+            fullNamespace = NormalizeResourceType(fullNamespace);
 
             // Trouve toutes les utilisations: variableName["Key"] ou variableName["Key", args]
             var usagePattern = new Regex($@"{variableName}\[""([^""]+)""[,\]]");
@@ -478,10 +482,24 @@ public class LocalizationExtractor
         var end = fullTypeName.LastIndexOf('>');
         if (start > 0 && end > start)
         {
-            // Retourne le nom complet namespace.type
-            return fullTypeName.Substring(start, end - start);
+            // Retourne le nom complet namespace.type, normalisé pour remplacer les tirets par des underscores
+            var resourceType = fullTypeName.Substring(start, end - start);
+            return NormalizeResourceType(resourceType);
         }
         return "Unknown";
+    }
+
+    /// <summary>
+    /// Normalise un nom de type de ressource en remplaçant les tirets par des underscores
+    /// Car .NET convertit automatiquement les tirets en underscores dans les noms d'assembly
+    /// Ex: "html-generator.Emails.Account.Confirmation" → "html_generator.Emails.Account.Confirmation"
+    /// </summary>
+    private string NormalizeResourceType(string resourceType)
+    {
+        // Sépare par le point pour normaliser chaque partie du namespace
+        var parts = resourceType.Split('.');
+        var normalizedParts = parts.Select(part => part.Replace('-', '_')).ToArray();
+        return string.Join(".", normalizedParts);
     }
 
     /// <summary>
@@ -559,6 +577,8 @@ public class LocalizationExtractor
         if (annotationKeys.Count > 0)
         {
             var resourceType = $"DataAnnotations.{className}";
+            // Normalise le namespace pour remplacer les tirets par des underscores
+            resourceType = NormalizeResourceType(resourceType);
             if (!results.ContainsKey(resourceType))
                 results[resourceType] = new HashSet<string>();
 
