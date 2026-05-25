@@ -1,6 +1,6 @@
 # Blazor Auto Starter
 
-Template de démarrage moderne pour application web Blazor .NET 9 avec mode de rendu automatique (Auto), combinant Server-Side Rendering (SSR) et WebAssembly pour des performances optimales.
+Template de démarrage moderne pour application web Blazor .NET 10 avec mode de rendu automatique (Auto), combinant Server-Side Rendering (SSR) et WebAssembly pour des performances optimales.
 
 ## Table des matières
 
@@ -43,11 +43,12 @@ Template de démarrage moderne pour application web Blazor .NET 9 avec mode de r
 - 🎭 **Bootstrap 5** - Interface utilisateur responsive avec intégration Bootstrap 5.3
 - ✨ **Font Awesome** - Bibliothèque d'icônes complète (v7.0)
 - 🔧 **SASS** - Compilation automatique des styles SASS
+- 📋 **Serilog** - Logging structuré avec sortie console et fichiers journaux rotatifs
 - 🏗️ **Architecture modulaire** - Séparation claire entre client, serveur et couche de données
 
 ## Prérequis
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [Node.js](https://nodejs.org/) (pour la compilation SASS et les dépendances frontend)
 
 ## Initialisation du projet
@@ -206,10 +207,11 @@ Le projet est organisé en sept projets distincts :
 
 ## Technologies utilisées
 
-- **Framework** : .NET 9
+- **Framework** : .NET 10
 - **UI** : Blazor (mode Auto - Server + WebAssembly)
-- **Base de données** : SQLite avec Entity Framework Core 9
+- **Base de données** : SQLite avec Entity Framework Core 10
 - **Authentification** : ASP.NET Core Identity
+- **Logging** : Serilog (console + fichiers journaux rotatifs)
 - **CSS** : Bootstrap 5.3 + SASS
 - **Icônes** : Font Awesome 7.0
 
@@ -330,6 +332,49 @@ Le logo utilise un design moderne avec :
 - Un accent de fusée avec dégradé orange/jaune symbolisant la performance
 
 Tous les fichiers sont dans [webapp/wwwroot/](webapp/wwwroot/).
+
+### Logging
+
+Le projet utilise [Serilog](https://serilog.net/) pour le logging structuré, configuré via `appsettings.json` :
+
+**Packages installés :**
+- `Serilog.AspNetCore` - Intégration avec ASP.NET Core
+- `Serilog.Settings.Configuration` - Configuration via `appsettings.json`
+- `Serilog.Sinks.Console` - Sortie console formatée
+- `Serilog.Sinks.File` - Fichiers journaux rotatifs
+
+**Configuration dans `appsettings.json` :**
+```json
+{
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "System": "Warning"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "outputTemplate": "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}"
+        }
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "logs/log-.txt",
+          "rollingInterval": "Day",
+          "outputTemplate": "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}"
+        }
+      }
+    ]
+  }
+}
+```
+
+Les fichiers de logs sont générés dans le dossier `logs/` avec rotation journalière.
 
 ### Emails
 
