@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Confirm email change" xml:space="preserve">
+    <value>Confirmer le changement d'email</value>
+  </data>
+  <data name="Error changing email." xml:space="preserve">
+    <value>Erreur lors du changement de votre email.</value>
+  </data>
+  <data name="Error changing user name." xml:space="preserve">
+    <value>Erreur lors du changement de votre nom d'utilisateur.</value>
+  </data>
+  <data name="Error: Invalid email change confirmation link." xml:space="preserve">
+    <value>Erreur: lien de confirmation de changement d'email invalide.</value>
+  </data>
+  <data name="Thank you for confirming your email change." xml:space="preserve">
+    <value>Merci d'avoir confirmé votre changement d'email.</value>
+  </data>
+  <data name="Unable to find user with Id '{0}'" xml:space="preserve">
+    <value>Impossible de trouver l'utilisateur avec l'ID '{0}'</value>
+  </data>
+</root>

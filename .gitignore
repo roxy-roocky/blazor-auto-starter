@@ -1,0 +1,49 @@
+# Build results
+
+[Dd]ebug/
+# (on évite d'ignorer les composants qui sont dans le dossier debug de l'appli)
+!webapp/Components/Debug
+
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+
+# Node modules
+node_modules/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Assets générés
+webapp/wwwroot/bootstrap
+webapp/wwwroot/custom
+webapp/wwwroot/fontawesome
+
+# Données applicatives
+/Data
+*.db
+*.db-shm
+*.db-wal
+
+# Migrations de base de données
+webapp/Migrations
+
+# Les appsettings
+appsettings.json
+appsettings.Development.json

@@ -1,0 +1,22 @@
+﻿@using Microsoft.Extensions.Localization
+@inherits LayoutComponentBase
+
+@inject IStringLocalizer<MainLayout> L
+
+<div class="page">
+    <header>
+        <NavBar />
+    </header>
+
+    <main>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    @L["An unhandled error has occurred."]
+    <a href="." class="reload">@L["Reload"]</a>
+    <span class="dismiss">🗙</span>
+</div>

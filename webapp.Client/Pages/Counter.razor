@@ -1,0 +1,24 @@
+﻿@page "/counter"
+@using Microsoft.Extensions.Localization
+@rendermode InteractiveWebAssembly
+
+@inject IStringLocalizer<Counter> L
+
+<PageTitle>@L["Counter"]</PageTitle>
+
+<h1>@L["Counter"]</h1>
+
+<div class="alert alert-info"><i class="fa-solid fa-circle-info"></i> @L["This page runs in client-side WASM. It continues to work even without a server connection."]</div>
+
+<p role="status">@L["Current count: {count}", currentCount]</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">@L["Click me"]</button>
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

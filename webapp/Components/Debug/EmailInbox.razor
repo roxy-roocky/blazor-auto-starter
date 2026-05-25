@@ -1,0 +1,391 @@
+@page "/debug/inbox"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.Localization
+@using main_datacontext
+@using main_datacontext.Emails
+@using webapp.Components.Debug.Shared
+
+@attribute [Authorize]
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+
+@inject MainDbContext DbContext
+@inject IStringLocalizer<EmailInbox> L
+
+<PageTitle>@L["Email inbox"]</PageTitle>
+
+<div class="container py-4 d-flex flex-column" style="min-height: calc(100vh - 100px);">
+    <h1 class="mb-4">@L["Email inbox"]</h1>
+
+    <!-- Filtres -->
+    <div class="accordion mb-4">
+        <div class="accordion-item">
+            <h5 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#email-list-filter" aria-expanded="true" aria-controls="email-list-filter">
+                    @L["Filters"]
+                </button>
+            </h5>
+            <div id="email-list-filter" class="accordion-collapse collapse">
+                <div class="row m-3 mb-4 g-2">
+                    <div class="col-lg-4 col-md-6 mt-3 mt-lg-0">
+                        <label for="filterRecipient" class="form-label">@L["Recipient"]</label>
+                        <input type="text" class="form-control" id="filterRecipient"
+                            @bind="_filterRecipient" @bind:event="oninput"
+                            @onkeydown="HandleKeyPress"
+                            placeholder="@L["Search for a recipient..."]">
+                    </div>
+                    <div class="col-lg-4 col-md-6 mt-3 mt-lg-0">
+                        <label for="filterSubject" class="form-label">@L["Subject"]</label>
+                        <input type="text" class="form-control" id="filterSubject"
+                            @bind="_filterSubject" @bind:event="oninput"
+                            @onkeydown="HandleKeyPress"
+                            placeholder="@L["Search for a subject..."]">
+                    </div>
+                    <div class="col-lg-2 col-md-6 mt-3 mt-lg-0">
+                        <label for="filterUnread" class="form-label">@L["Status"]</label>
+                        <select class="form-select" id="filterUnread" @bind="_filterUnread" @bind:after="ApplyFilters">
+                            <option value="">@L["All"]</option>
+                            <option value="unread">@L["Unread"]</option>
+                            <option value="read">@L["Read"]</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-md-6 mt-3 mt-lg-0 d-flex align-items-end gap-2">
+                        <button class="btn btn-primary btn-sm flex-fill" @onclick="ApplyFilters">
+                            <i class="fa-solid fa-filter me-2"></i>@L["Filter"]
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm" @onclick="ClearFilters" title="@L["Clear filters"]">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="@(_loadingTable ? "loading-data" : "")">
+        @if (_emails == null)
+        {
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">@L["Loading..."]</span>
+                </div>
+            </div>
+        }
+        else if (!_emails.Any())
+        {
+            <div class="alert alert-info">
+                <i class="fa-solid fa-info-circle me-2"></i>@L["No emails found in the database."]
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive flex-grow-1">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>@L["Date"]</th>
+                            <th>@L["Recipients"]</th>
+                            <th>@L["Subject"]</th>
+                            <th>@L["Status"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var email in _emails)
+                        {
+                            <tr @onclick="async () => await ShowEmailPopup(email)"
+                                style="cursor: pointer;"
+                                class="@(email.Read ? "" : "email-unread")">
+                                <td>@email.SentDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <small>@email.To</small>
+                                </td>
+                                <td>@email.Subject</td>
+                                <td>
+                                    @if (!email.Read)
+                                    {
+                                        <span class="badge bg-primary">@L["Unread"]</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@L["Read"]</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="@L["Email pagination"]" class="mt-2">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => GoToPage(_currentPage - 1)" disabled="@(_currentPage == 1)">
+                            @L["Previous"]
+                        </button>
+                    </li>
+
+                    @for (int i = Math.Max(1, _currentPage - 2); i <= Math.Min(_totalPages, _currentPage + 2); i++)
+                    {
+                        var pageNumber = i;
+                        <li class="page-item @(pageNumber == _currentPage ? "active" : "")">
+                            <button class="page-link" @onclick="() => GoToPage(pageNumber)">
+                                @pageNumber
+                            </button>
+                        </li>
+                    }
+
+                    <li class="page-item @(_currentPage == _totalPages ? "disabled" : "")">
+                        <button class="page-link" @onclick="() => GoToPage(_currentPage + 1)" disabled="@(_currentPage == _totalPages)">
+                            @L["Next"]
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="text-center text-muted">
+                @L["Page"] @_currentPage @L["of"] @_totalPages (@_totalCount @L["emails total"])
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal pour afficher l'email -->
+@if (_selectedEmail != null || _isClosing)
+{
+    <div class="modal fade show d-block @(_isClosing ? "modal-backdrop-closing" : "modal-backdrop-animated")" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" @onclick="ClosePopup">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" @onclick:stopPropagation="true">
+            <div class="modal-content @(_isClosing ? "modal-content-closing" : "modal-content-animated")">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(_selectedEmail?.Subject ?? "")</h5>
+                    <button type="button" class="btn-close" @onclick="ClosePopup"></button>
+                </div>
+                <div class="modal-body">
+                    @if (_selectedEmail != null)
+                    {
+                        <div class="mb-3">
+                            <strong>@L["From:"]: </strong>
+                            @if (!string.IsNullOrEmpty(_selectedEmail.SenderName))
+                            {
+                                <text>@_selectedEmail.SenderName &lt;@_selectedEmail.SenderEmail&gt;</text>
+                            }
+                            else
+                            {
+                                <text>@_selectedEmail.SenderEmail</text>
+                            }
+                        </div>
+                        <div class="mb-3">
+                            <strong>@L["To:"]</strong> @_selectedEmail.To
+                        </div>
+                        @if (!string.IsNullOrEmpty(_selectedEmail.Cc))
+                        {
+                            <div class="mb-3">
+                                <strong>@L["CC:"]</strong> @_selectedEmail.Cc
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(_selectedEmail.Bcc))
+                        {
+                            <div class="mb-3">
+                                <strong>@L["BCC:"]</strong> @_selectedEmail.Bcc
+                            </div>
+                        }
+                        <div class="mb-3">
+                            <strong>@L["Date:"]</strong> @_selectedEmail.SentDate.ToString("dd/MM/yyyy HH:mm:ss")
+                        </div>
+                        <hr />
+                        @if (!string.IsNullOrEmpty(_selectedEmail.HtmlContent))
+                        {
+                            <iframe srcdoc="@SanitizeHtml(_selectedEmail.HtmlContent)" style="width: 100%; min-height: 600px; border: 1px solid #dee2e6; border-radius: 0.375rem;"></iframe>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">
+                                <i class="fa-solid fa-exclamation-triangle me-2"></i>@L["No HTML content available for this email."]
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="ClosePopup">@L["Close"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _loadingTable = false;
+    private List<DbEmail>? _emails;
+    private DbEmail? _selectedEmail;
+    private bool _isClosing = false;
+
+    private int _currentPage = 1;
+    private int _pageSize = 20;
+    private int _totalCount = 0;
+    private int _totalPages = 0;
+
+    // Filtres
+    private string _filterRecipient = "";
+    private string _filterSubject = "";
+    private string _filterUnread = "";
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await LoadEmails();
+        }
+    }
+
+    private async Task LoadEmails()
+    {
+        _loadingTable = true;
+        StateHasChanged();
+
+        var query = DbContext.DatabaseEmails.AsQueryable();
+
+        // Appliquer les filtres
+        if (!string.IsNullOrWhiteSpace(_filterRecipient))
+        {
+            query = query.Where(e => e.To.Contains(_filterRecipient));
+        }
+
+        if (!string.IsNullOrWhiteSpace(_filterSubject))
+        {
+            query = query.Where(e => e.Subject != null && e.Subject.Contains(_filterSubject));
+        }
+
+        if (_filterUnread == "unread")
+        {
+            query = query.Where(e => !e.Read);
+        }
+        else if (_filterUnread == "read")
+        {
+            query = query.Where(e => e.Read);
+        }
+
+        _totalCount = await query.CountAsync();
+        _totalPages = (int)Math.Ceiling(_totalCount / (double)_pageSize);
+
+        _emails = await query
+            .OrderByDescending(e => e.SentDate)
+            .Skip((_currentPage - 1) * _pageSize)
+            .Take(_pageSize)
+            .ToListAsync();
+
+        _loadingTable = false;
+        StateHasChanged();
+    }
+
+    private async Task ApplyFilters()
+    {
+        _currentPage = 1; // Réinitialiser à la première page lors de l'application des filtres
+        await LoadEmails();
+    }
+
+    private async Task ClearFilters()
+    {
+        _filterRecipient = "";
+        _filterSubject = "";
+        _filterUnread = "";
+        _currentPage = 1;
+        await LoadEmails();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await ApplyFilters();
+        }
+    }
+
+    private async Task GoToPage(int pageNumber)
+    {
+        if (pageNumber < 1 || pageNumber > _totalPages)
+            return;
+
+        _currentPage = pageNumber;
+        await LoadEmails();
+    }
+
+    private async Task ShowEmailPopup(DbEmail email)
+    {
+        _selectedEmail = email;
+        _isClosing = false;
+
+        // Marquer l'email comme lu
+        if (!email.Read)
+        {
+            email.Read = true;
+            DbContext.DatabaseEmails.Update(email);
+            await DbContext.SaveChangesAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async void ClosePopup()
+    {
+        if (_isClosing)
+            return;
+
+        _isClosing = true;
+        StateHasChanged();
+
+        // Attendre la fin de l'animation (300ms)
+        await Task.Delay(300);
+
+        _selectedEmail = null;
+        _isClosing = false;
+        StateHasChanged();
+    }
+
+    private string SanitizeHtml(string html)
+    {
+        if (string.IsNullOrEmpty(html))
+            return html;
+
+        // Supprimer les balises <script> et leur contenu
+        html = System.Text.RegularExpressions.Regex.Replace(
+            html,
+            @"<script[^>]*>.*?</script>",
+            "",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline
+        );
+
+        // Supprimer les balises <iframe> et leur contenu
+        html = System.Text.RegularExpressions.Regex.Replace(
+            html,
+            @"<iframe[^>]*>.*?</iframe>",
+            "",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline
+        );
+
+        // Supprimer les attributs d'événements JavaScript (onclick, onload, etc.)
+        html = System.Text.RegularExpressions.Regex.Replace(
+            html,
+            @"\s*on\w+\s*=\s*[""'][^""']*[""']",
+            "",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase
+        );
+
+        // Supprimer les balises <script> auto-fermantes
+        html = System.Text.RegularExpressions.Regex.Replace(
+            html,
+            @"<script[^>]*/>",
+            "",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase
+        );
+
+        // Supprimer les balises <iframe> auto-fermantes
+        html = System.Text.RegularExpressions.Regex.Replace(
+            html,
+            @"<iframe[^>]*/>",
+            "",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase
+        );
+
+        return html;
+    }
+}

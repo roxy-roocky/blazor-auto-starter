@@ -1,0 +1,37 @@
+﻿@page "/Account/Manage/PersonalData"
+
+@using Microsoft.Extensions.Localization
+
+@inject IdentityUserAccessor UserAccessor
+@inject IStringLocalizer<PersonalData> L
+
+<PageTitle>@L["Personal Data"]</PageTitle>
+
+<StatusMessage />
+<h3>@L["Personal Data"]</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <p>@L["Your account contains personal data that you have given us. This page allows you to download or delete that data."]</p>
+        <p>
+            <strong>@L["Deleting this data will permanently remove your account, and this cannot be recovered."]</strong>
+        </p>
+        <form action="Account/Manage/DownloadPersonalData" method="post">
+            <AntiforgeryToken />
+            <button class="btn btn-primary" type="submit">@L["Download"]</button>
+        </form>
+        <p>
+            <a href="Account/Manage/DeletePersonalData" class="btn btn-danger">@L["Delete"]</a>
+        </p>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _ = await UserAccessor.GetRequiredUserAsync(HttpContext);
+    }
+}

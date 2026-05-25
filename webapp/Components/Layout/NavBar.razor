@@ -1,0 +1,89 @@
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Localization
+@using webapp.Client.Components.Layout
+
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IServiceProvider ServiceProvider
+@inject IStringLocalizer<NavBar> L
+
+<nav class="navbar navbar-expand-lg bg-secondary border-bottom mb-3">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-semibold" href="#"><img width="32px" class="me-2" src="/favicon.svg" />Blazor Auto Starter</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <li class="nav-item px-3">
+        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+          <span>@L["Home"]</span>
+        </NavLink>
+      </li>
+        <li class="nav-item px-2">
+            <NavLink class="nav-link" href="counter">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> @L["Counter "]
+            </NavLink>
+        </li>
+
+        <li class="nav-item px-2">
+            <NavLink class="nav-link" href="weather">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> @L["Weather"]
+            </NavLink>
+        </li>
+        @if(_loggedUser is not null)
+        {
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              @L["Debug"]
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/debug/inbox">@L["Email inbox"]</a></li>
+              <li><a class="dropdown-item" href="/debug/email-templates">@L["Email templates"]</a></li>
+              @* <li><hr class="dropdown-divider"></li> *@
+            </ul>
+          </li>
+        }
+      </ul>
+      <LanguageSwitcher Classes="pe-2 my-2 my-lg-0"/>
+      <ThemeSwitcher Classes="pe-1 my-2 my-lg-0"/>
+      @if(_loggedUser is not null)
+      {
+        <a class="text-decoration-none my-2 my-lg-0 text-black" href="Account/Manage">
+          <div class="d-flex align-items-center ">
+            <i class="fa-solid fa-circle-user" style="font-size: 32px;"></i>
+            <div>@_loggedUser.Email</div>
+          </div>
+        </a>
+      }
+      else
+      {
+        <a class="text-decoration-none my-2 my-lg-0 text-black" href="Account/Login">
+          <div class="d-flex align-items-center ">
+            <i class="fa-solid fa-circle-user" style="font-size: 32px;"></i>
+            <div>@L["Log in"]</div>
+          </div>
+        </a>
+      }
+    </div>
+  </div>
+</nav>
+
+@code{
+    private main_datacontext.Identity.User? _loggedUser;
+    protected override async Task OnInitializedAsync()
+    {
+        if(HttpContextAccessor.HttpContext!.User.Identity?.IsAuthenticated ?? false)
+        {
+          using var scope = HttpContextAccessor.HttpContext!.RequestServices.CreateScope();
+          var userManager = scope.ServiceProvider.GetRequiredService<UserManager<main_datacontext.Identity.User>>();
+          _loggedUser = await userManager.GetUserAsync(HttpContextAccessor.HttpContext!.User);
+        }
+    }
+}
+
+@code{
+  protected int? _notReadedEmail = null;
+
+  
+}

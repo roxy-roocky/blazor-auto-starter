@@ -1,0 +1,35 @@
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../bootstrap/bootstrap.scss";
+
+#blazor-error-ui
+{
+    display: none;
+}
+
+.loading-data{
+    pointer-events: none;
+    opacity: 0.25;
+}
+
+// Styles pour les emails non lus - adaptatifs au thème
+.email-unread {
+    font-weight: 600;
+
+    // Thème clair
+    [data-bs-theme="light"] & td {
+        background-color: tint-color($primary, 80%) !important;
+    }
+
+    [data-bs-theme="light"] &:hover td {
+        background-color: tint-color($primary, 70%) !important;
+    }
+
+    // Thème sombre
+    [data-bs-theme="dark"] & td {
+        background-color: rgba($primary, 0.25) !important;
+    }
+
+    [data-bs-theme="dark"] &:hover td {
+        background-color: rgba($primary, 0.35) !important;
+    }
+}

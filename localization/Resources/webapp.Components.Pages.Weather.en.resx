@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Balmy" xml:space="preserve">
+    <value>Balmy</value>
+  </data>
+  <data name="Bracing" xml:space="preserve">
+    <value>Bracing</value>
+  </data>
+  <data name="Chilly" xml:space="preserve">
+    <value>Chilly</value>
+  </data>
+  <data name="Cool" xml:space="preserve">
+    <value>Cool</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Freezing" xml:space="preserve">
+    <value>Freezing</value>
+  </data>
+  <data name="Hot" xml:space="preserve">
+    <value>Hot</value>
+  </data>
+  <data name="Loading..." xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="Mild" xml:space="preserve">
+    <value>Mild</value>
+  </data>
+  <data name="Scorching" xml:space="preserve">
+    <value>Scorching</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="Sweltering" xml:space="preserve">
+    <value>Sweltering</value>
+  </data>
+  <data name="Temp. (C)" xml:space="preserve">
+    <value>Temp. (C)</value>
+  </data>
+  <data name="Temp. (F)" xml:space="preserve">
+    <value>Temp. (F)</value>
+  </data>
+  <data name="Temperature in Celsius" xml:space="preserve">
+    <value>Temperature in Celsius</value>
+  </data>
+  <data name="Temperature in Farenheit" xml:space="preserve">
+    <value>Temperature in Farenheit</value>
+  </data>
+  <data name="This component demonstrates showing data." xml:space="preserve">
+    <value>This component demonstrates showing data.</value>
+  </data>
+  <data name="Warm" xml:space="preserve">
+    <value>Warm</value>
+  </data>
+  <data name="Weather" xml:space="preserve">
+    <value>Weather</value>
+  </data>
+</root>

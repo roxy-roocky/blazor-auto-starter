@@ -1,0 +1,17 @@
+﻿@page "/auth"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+
+@attribute [Authorize]
+@rendermode InteractiveAuto
+
+@inject IStringLocalizer<Auth> L
+
+<PageTitle>@L["Auth"]</PageTitle>
+
+<h1>@L["You are authenticated"]</h1>
+
+<AuthorizeView>
+    @L["Hello {name}", context.User.Identity?.Name!]
+</AuthorizeView>

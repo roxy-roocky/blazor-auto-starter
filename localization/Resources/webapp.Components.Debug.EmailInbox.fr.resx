@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="All" xml:space="preserve">
+    <value>Tous</value>
+  </data>
+  <data name="BCC:" xml:space="preserve">
+    <value>CCI :</value>
+  </data>
+  <data name="CC:" xml:space="preserve">
+    <value>CC :</value>
+  </data>
+  <data name="Clear filters" xml:space="preserve">
+    <value>Effacer les filtres</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Fermer</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Date:" xml:space="preserve">
+    <value>Date :</value>
+  </data>
+  <data name="Email Inbox" xml:space="preserve">
+    <value>Boîte de réception des emails</value>
+  </data>
+  <data name="Email pagination" xml:space="preserve">
+    <value>Pagination des emails</value>
+  </data>
+  <data name="emails total" xml:space="preserve">
+    <value>emails au total</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filtrer</value>
+  </data>
+  <data name="Filters" xml:space="preserve">
+    <value>Filtres</value>
+  </data>
+  <data name="From:" xml:space="preserve">
+    <value>De :</value>
+  </data>
+  <data name="Loading..." xml:space="preserve">
+    <value>Chargement...</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Suivant</value>
+  </data>
+  <data name="No emails found in the database." xml:space="preserve">
+    <value>Aucun email trouvé dans la base de données.</value>
+  </data>
+  <data name="No HTML content available for this email." xml:space="preserve">
+    <value>Aucun contenu HTML disponible pour cet email.</value>
+  </data>
+  <data name="of" xml:space="preserve">
+    <value>sur</value>
+  </data>
+  <data name="Page" xml:space="preserve">
+    <value>Page</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Précédent</value>
+  </data>
+  <data name="Read" xml:space="preserve">
+    <value>Lu</value>
+  </data>
+  <data name="Recipient" xml:space="preserve">
+    <value>Destinataire</value>
+  </data>
+  <data name="Recipients" xml:space="preserve">
+    <value>Destinataires</value>
+  </data>
+  <data name="Search for a recipient..." xml:space="preserve">
+    <value>Rechercher un destinataire...</value>
+  </data>
+  <data name="Search for a subject..." xml:space="preserve">
+    <value>Rechercher un sujet...</value>
+  </data>
+  <data name="Sender" xml:space="preserve">
+    <value>Expéditeur</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>Sujet</value>
+  </data>
+  <data name="To:" xml:space="preserve">
+    <value>À :</value>
+  </data>
+  <data name="Unread" xml:space="preserve">
+    <value>Non lu</value>
+  </data>
+</root>

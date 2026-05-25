@@ -1,0 +1,47 @@
+@using webapp.Client.Managers
+
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@inject CultureManager CultureManager
+@inject IJSRuntime JSRuntime
+
+<div class="dropdown @Classes">
+    <button class="btn btn-sm btn-outline-body-emphasis dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        @CultureManager.GetFlag(_currentCulture) @CultureManager.GetDisplayName(_currentCulture)
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+        @foreach (var culture in CultureManager.SupportedCultures)
+        {
+            <li>
+                <button class="dropdown-item @(culture == _currentCulture ? "active" : "")"
+                        @onclick="() => OnCultureChange(culture)">
+                    @CultureManager.GetFlag(culture) @CultureManager.GetDisplayName(culture)
+                </button>
+            </li>
+        }
+    </ul>
+</div>
+
+@code {
+    [Parameter]
+    public string Classes { get; set; } = "";
+
+    private string _currentCulture = CultureManager.DefaultCulture;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _currentCulture = await CultureManager.GetCurrentCultureAsync();
+    }
+
+    private async Task OnCultureChange(string culture)
+    {
+        if (culture != _currentCulture)
+        {
+            await CultureManager.SetCultureAsync(culture);
+            _currentCulture = culture;
+            // Reload to apply culture changes
+            await Task.Delay(100);
+            await JSRuntime.InvokeVoidAsync("location.reload");
+        }
+    }
+}

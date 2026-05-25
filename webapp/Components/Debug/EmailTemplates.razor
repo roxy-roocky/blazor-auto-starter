@@ -1,0 +1,75 @@
+@page "/debug/email-templates"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using html_generator.Emails.Account
+@using webapp.Components.Debug.Shared
+
+@attribute [Authorize]
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+
+@inject IStringLocalizer<EmailTemplates> L
+
+<PageTitle>@L["Email Templates Preview"]</PageTitle>
+
+<div class="container py-4">
+    <h1 class="mb-4">@L["Email Templates Preview"]</h1>
+    <p class="text-muted mb-4">@L["This page displays an example of each available email template with test data."]</p>
+
+    <!-- Confirmation -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fa-solid fa-envelope-circle-check me-2"></i>
+                @L["Account confirmation"]
+            </h5>
+            <small class="text-muted">html-generator/Emails/Account/Confirmation.razor</small>
+        </div>
+        <div class="card-body p-0">
+            <TemplateIframe>
+                <Confirmation User="@_testUser" ConfirmationLink="https://example.com/confirm?token=abc123" />
+            </TemplateIframe>
+        </div>
+    </div>
+
+    <!-- Password Reset (Code) -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fa-solid fa-key me-2"></i>
+                @L["Password reset (Code)"]
+            </h5>
+            <small class="text-muted">html-generator/Emails/Account/PasswordReset.razor</small>
+        </div>
+        <div class="card-body p-0">
+            <TemplateIframe>
+                <PasswordReset User="@_testUser" ResetCode="123456" />
+            </TemplateIframe>
+        </div>
+    </div>
+
+    <!-- Password Reset (Link) -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fa-solid fa-link me-2"></i>
+                @L["Password reset (Link)"]
+            </h5>
+            <small class="text-muted">html-generator/Emails/Account/PasswordResetLink.razor</small>
+        </div>
+        <div class="card-body p-0">
+            <TemplateIframe>
+                <PasswordResetLink User="@_testUser" ResetLink="https://example.com/reset?token=xyz789" />
+            </TemplateIframe>
+        </div>
+    </div>
+</div>
+
+@code {
+    private main_datacontext.Identity.User _testUser = new()
+    {
+        FirstName = "Jean",
+        LastName = "Dupont",
+        Email = "jean.dupont@example.com"
+    };
+}

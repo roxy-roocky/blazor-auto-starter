@@ -1,0 +1,12 @@
+﻿@page "/Account/AccessDenied"
+
+@using Microsoft.Extensions.Localization
+
+@inject IStringLocalizer<AccessDenied> L
+
+<PageTitle>@L["Access denied"]</PageTitle>
+
+<header>
+    <h1 class="text-danger">@L["Access denied"]</h1>
+    <p class="text-danger">@L["You do not have access to this resource."]</p>
+</header>
