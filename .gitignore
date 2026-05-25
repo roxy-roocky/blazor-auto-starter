@@ -47,3 +47,6 @@ webapp/Migrations
 # Les appsettings
 appsettings.json
 appsettings.Development.json
+
+# Les fichiers spécifiques MacOS
+.DS_Store
